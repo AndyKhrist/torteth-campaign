@@ -1,0 +1,2211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D&D 5e — Character Sheet</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&display=swap');
+
+  :root {
+    --parchment: #f5eedc;
+    --parchment-dark: #e8dfc4;
+    --ink: #1a1209;
+    --ink-light: #3d2e1a;
+    --ink-muted: #7a6a52;
+    --red: #8b1a1a;
+    --red-light: #c0392b;
+    --gold: #c9a227;
+    --gold-light: #f0c040;
+    --border: #a08060;
+    --border-light: #c8b090;
+    --section-bg: rgba(160,120,80,0.08);
+    --dm-bg: #1a1209;
+    --dm-surface: #2d2015;
+    --dm-surface2: #3d2e1a;
+    --dm-gold: #c9a227;
+    --dm-text: #f5eedc;
+    --dm-muted: #a08060;
+    --dm-red: #c0392b;
+    --dm-green: #27ae60;
+    --tab-active: #8b1a1a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #2a1f10;
+    font-family: 'Crimson Pro', Georgia, serif;
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ── TOP BAR ── */
+  #topbar {
+    background: var(--dm-bg);
+    border-bottom: 2px solid var(--gold);
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 0;
+  }
+  #topbar h1 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: 18px;
+    padding: 10px 20px;
+    letter-spacing: 2px;
+    flex-shrink: 0;
+    border-right: 1px solid #3d2e1a;
+  }
+  .mode-tabs { display: flex; flex: 1; }
+  .mode-tab {
+    padding: 12px 24px;
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: var(--dm-muted);
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .mode-tab:hover { color: var(--dm-text); }
+  .mode-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+  .topbar-actions { margin-left: auto; display: flex; gap: 8px; padding: 0 16px; }
+  .topbar-btn {
+    padding: 6px 14px;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+    border: 1px solid var(--gold);
+    background: transparent;
+    color: var(--gold);
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.2s;
+  }
+  .topbar-btn:hover { background: var(--gold); color: var(--dm-bg); }
+  .topbar-btn.danger { border-color: var(--dm-red); color: var(--dm-red); }
+  .topbar-btn.danger:hover { background: var(--dm-red); color: #fff; }
+
+  /* ── PANELS ── */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ── CHARACTER SHEET ── */
+  #sheet-panel {
+    background: var(--parchment);
+    min-height: calc(100vh - 48px);
+    padding: 24px;
+  }
+  .sheet-header {
+    background: var(--ink);
+    border-radius: 6px 6px 0 0;
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 0;
+  }
+  .char-name-display {
+    font-family: 'Cinzel', serif;
+    font-size: 28px;
+    color: var(--gold);
+    letter-spacing: 2px;
+  }
+  .char-subtitle { color: var(--ink-muted); font-size: 14px; margin-top: 2px; }
+  .hp-widget {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(139,26,26,0.3);
+    border: 1px solid var(--red-light);
+    border-radius: 6px;
+    padding: 8px 14px;
+  }
+  .hp-label { font-family: 'Cinzel', serif; font-size: 11px; color: #f5eedc; letter-spacing: 1px; }
+  .hp-cur { font-size: 32px; font-weight: 600; color: #ff6b6b; line-height: 1; }
+  .hp-sep { color: #a08060; font-size: 20px; }
+  .hp-max { font-size: 18px; color: #f5eedc; }
+  .hp-btn { background: rgba(139,26,26,0.5); border: 1px solid #8b1a1a; color: #ff6b6b; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .hp-btn:hover { background: #8b1a1a; }
+
+  .sheet-body { background: var(--parchment); border: 1px solid var(--border); border-top: none; border-radius: 0 0 6px 6px; }
+
+  /* Tabs inside sheet */
+  .sheet-tabs { display: flex; border-bottom: 2px solid var(--border-light); background: var(--parchment-dark); }
+  .sheet-tab {
+    padding: 10px 20px;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 1px;
+    color: var(--ink-muted);
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+  }
+  .sheet-tab:hover { color: var(--ink); }
+  .sheet-tab.active { color: var(--red); border-bottom-color: var(--red); }
+
+  .sheet-page { display: none; padding: 20px; }
+  .sheet-page.active { display: block; }
+
+  /* Sections */
+  .section {
+    background: var(--section-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--red);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  /* Stats grid */
+  .stats-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+  .stat-box {
+    text-align: center;
+    background: var(--ink);
+    border-radius: 4px;
+    padding: 8px 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .stat-box:hover { background: var(--ink-light); }
+  .stat-name { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px; color: var(--gold); display: block; }
+  .stat-val { font-size: 26px; font-weight: 600; color: #f5eedc; line-height: 1.1; display: block; }
+  .stat-mod { font-size: 13px; color: var(--gold-light); display: block; }
+
+  /* Two column layout */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  /* Saves & Skills */
+  .check-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(160,120,80,0.2);
+    font-size: 14px;
+  }
+  .check-row:last-child { border-bottom: none; }
+  .prof-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .prof-dot.proficient { background: var(--red); border-color: var(--red); }
+  .prof-dot.expert { background: var(--gold); border-color: var(--gold); }
+  .check-label { flex: 1; color: var(--ink-light); }
+  .check-mod { font-weight: 600; color: var(--ink); min-width: 28px; text-align: right; }
+  .check-attr { font-size: 11px; color: var(--ink-muted); }
+
+  /* Combat stats */
+  .combat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .combat-box {
+    text-align: center;
+    background: var(--section-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    padding: 10px 6px;
+  }
+  .combat-val { font-size: 24px; font-weight: 600; color: var(--ink); display: block; }
+  .combat-label { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px; color: var(--ink-muted); display: block; margin-top: 2px; }
+
+  /* Inputs */
+  input[type=text], input[type=number], textarea, select {
+    font-family: 'Crimson Pro', serif;
+    font-size: 14px;
+    background: rgba(255,255,255,0.5);
+    border: 1px solid var(--border-light);
+    border-radius: 3px;
+    padding: 5px 8px;
+    color: var(--ink);
+    width: 100%;
+    transition: border-color 0.15s;
+  }
+  input[type=text]:focus, input[type=number]:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--red);
+    background: rgba(255,255,255,0.8);
+  }
+  textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+  label { font-size: 12px; color: var(--ink-muted); display: block; margin-bottom: 3px; font-family: 'Cinzel', serif; letter-spacing: 0.5px; }
+
+  /* Field groups */
+  .field-group { margin-bottom: 12px; }
+  .field-row { display: grid; gap: 10px; margin-bottom: 10px; }
+  .fr2 { grid-template-columns: 1fr 1fr; }
+  .fr3 { grid-template-columns: 1fr 1fr 1fr; }
+  .fr4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  /* Inventory */
+  .inv-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .inv-table th {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--red);
+    border-bottom: 1px solid var(--border);
+    padding: 6px 8px;
+    text-align: left;
+    background: rgba(160,120,80,0.1);
+  }
+  .inv-table td { padding: 6px 8px; border-bottom: 1px solid rgba(160,120,80,0.2); vertical-align: middle; }
+  .inv-table tr:last-child td { border-bottom: none; }
+  .inv-table tr:hover td { background: rgba(160,120,80,0.08); }
+  .qty-control { display: flex; align-items: center; gap: 4px; }
+  .qty-btn { background: var(--parchment-dark); border: 1px solid var(--border-light); width: 22px; height: 22px; border-radius: 3px; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; color: var(--ink); transition: all 0.15s; }
+  .qty-btn:hover { background: var(--red); color: #fff; border-color: var(--red); }
+  .qty-val { min-width: 28px; text-align: center; font-weight: 600; }
+  .del-btn { background: transparent; border: 1px solid #ddd; width: 24px; height: 24px; border-radius: 3px; cursor: pointer; color: var(--ink-muted); display: flex; align-items: center; justify-content: center; transition: all 0.15s; font-size: 14px; }
+  .del-btn:hover { background: var(--red); color: #fff; border-color: var(--red); }
+
+  /* Currency */
+  .currency-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .currency-box { text-align: center; }
+  .currency-coin {
+    width: 44px; height: 44px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700;
+    margin: 0 auto 4px;
+    border: 3px solid;
+  }
+  .coin-pp { background: #e8e0f0; border-color: #9b59b6; color: #6c3483; }
+  .coin-gp { background: #fef9e7; border-color: #c9a227; color: #7d6608; }
+  .coin-ep { background: #eaf4fb; border-color: #2980b9; color: #1a5276; }
+  .coin-sp { background: #f2f3f4; border-color: #7f8c8d; color: #424949; }
+  .coin-cp { background: #fdebd0; border-color: #ca6f1e; color: #784212; }
+  .currency-name { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px; color: var(--ink-muted); }
+  .currency-input { text-align: center; font-weight: 600; font-size: 16px; }
+
+  /* Spell slots */
+  .slot-grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 6px; margin-bottom: 12px; }
+  .slot-box { text-align: center; }
+  .slot-label { font-family: 'Cinzel', serif; font-size: 9px; color: var(--ink-muted); margin-bottom: 4px; }
+  .slot-pips { display: flex; flex-wrap: wrap; gap: 3px; justify-content: center; }
+  .slot-pip {
+    width: 12px; height: 12px; border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--parchment-dark);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .slot-pip.used { background: var(--red); border-color: var(--red); }
+  .slot-total { font-size: 11px; color: var(--ink-muted); margin-top: 2px; }
+
+  /* Spell list */
+  .spell-row {
+    display: grid;
+    grid-template-columns: 28px 1fr auto auto;
+    gap: 8px;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(160,120,80,0.2);
+    font-size: 14px;
+  }
+  .spell-row:last-child { border-bottom: none; }
+  .spell-prepared {
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 2px solid var(--border);
+    cursor: pointer; transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .spell-prepared.prepared { background: var(--gold); border-color: var(--gold); }
+  .spell-name { font-style: italic; color: var(--ink-light); }
+  .spell-school { font-size: 11px; color: var(--ink-muted); }
+  .spell-concentration { font-size: 10px; background: rgba(139,26,26,0.1); color: var(--red); border-radius: 3px; padding: 1px 5px; }
+
+  /* Add buttons */
+  .add-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 14px;
+    font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 1px;
+    background: transparent;
+    border: 1px dashed var(--border);
+    color: var(--ink-muted);
+    border-radius: 3px; cursor: pointer;
+    transition: all 0.2s; margin-top: 8px;
+  }
+  .add-btn:hover { border-style: solid; border-color: var(--red); color: var(--red); background: rgba(139,26,26,0.05); }
+
+  /* Features list */
+  .feature-row { padding: 8px 0; border-bottom: 1px solid rgba(160,120,80,0.2); }
+  .feature-row:last-child { border-bottom: none; }
+  .feature-name { font-weight: 600; font-size: 15px; color: var(--ink); }
+  .feature-src { font-size: 12px; color: var(--ink-muted); font-style: italic; }
+  .feature-desc { font-size: 14px; color: var(--ink-light); margin-top: 3px; line-height: 1.5; }
+
+  /* Death saves */
+  .death-saves { display: flex; gap: 16px; align-items: center; }
+  .save-pips { display: flex; gap: 5px; }
+  .save-pip {
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 2px solid var(--border);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .save-pip.success { background: var(--gold); border-color: var(--gold); }
+  .save-pip.failure { background: var(--red); border-color: var(--red); }
+
+  /* Hit dice */
+  .hitdice-row { display: flex; gap: 8px; align-items: center; }
+  .hd-pip {
+    width: 24px; height: 24px; border-radius: 3px;
+    border: 2px solid var(--border);
+    background: var(--parchment-dark);
+    cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; color: var(--ink-muted);
+  }
+  .hd-pip.used { background: var(--ink-muted); border-color: var(--ink-muted); color: #fff; }
+
+  /* Level up section */
+  .level-card {
+    background: var(--ink);
+    border-radius: 6px;
+    padding: 14px;
+    margin-bottom: 16px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 14px;
+  }
+  .level-badge {
+    width: 56px; height: 56px;
+    background: var(--red);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cinzel', serif; font-size: 24px; font-weight: 700;
+    color: var(--gold);
+  }
+  .level-info { color: var(--parchment); }
+  .level-info h3 { font-family: 'Cinzel', serif; font-size: 15px; color: var(--gold); }
+  .level-info p { font-size: 13px; color: #a08060; margin-top: 3px; }
+  .level-up-btn {
+    padding: 10px 18px;
+    font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 1px;
+    background: var(--gold);
+    border: none; border-radius: 4px;
+    color: var(--ink); cursor: pointer;
+    transition: all 0.2s; font-weight: 600;
+  }
+  .level-up-btn:hover { background: var(--gold-light); transform: translateY(-1px); }
+  .xp-bar-wrap { background: rgba(255,255,255,0.1); border-radius: 3px; height: 6px; margin-top: 8px; }
+  .xp-bar { background: var(--gold); height: 100%; border-radius: 3px; transition: width 0.4s; }
+
+  /* ── DM PANEL ── */
+  #dm-panel {
+    background: var(--dm-bg);
+    min-height: calc(100vh - 48px);
+    padding: 20px;
+    color: var(--dm-text);
+  }
+  .dm-grid { display: grid; grid-template-columns: 280px 1fr; gap: 20px; }
+  .dm-sidebar { }
+  .dm-main { }
+
+  .dm-section {
+    background: var(--dm-surface);
+    border: 1px solid #3d2e1a;
+    border-radius: 6px;
+    padding: 14px;
+    margin-bottom: 14px;
+  }
+  .dm-section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 11px; letter-spacing: 2px;
+    color: var(--dm-gold);
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #3d2e1a;
+  }
+
+  /* Player cards in DM */
+  .player-card {
+    background: var(--dm-surface2);
+    border: 1px solid #4d3a22;
+    border-radius: 5px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+  .player-card:hover { border-color: var(--dm-gold); }
+  .player-card.selected { border-color: var(--dm-gold); background: rgba(201,162,39,0.1); }
+  .pc-name { font-family: 'Cinzel', serif; font-size: 13px; color: var(--dm-text); }
+  .pc-class { font-size: 12px; color: var(--dm-muted); }
+  .pc-hp { font-size: 13px; color: #ff6b6b; font-weight: 600; }
+
+  /* Transaction log */
+  .tx-row {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 8px 0; border-bottom: 1px solid #2d2015;
+    font-size: 13px;
+  }
+  .tx-row:last-child { border-bottom: none; }
+  .tx-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .tx-detail { flex: 1; }
+  .tx-who { font-weight: 600; color: var(--dm-gold); }
+  .tx-what { color: var(--dm-muted); }
+  .tx-when { font-size: 11px; color: #5d4e36; }
+
+  /* DM inputs */
+  .dm-input {
+    background: var(--dm-surface2);
+    border: 1px solid #4d3a22;
+    border-radius: 3px;
+    padding: 7px 10px;
+    color: var(--dm-text);
+    font-family: 'Crimson Pro', serif;
+    font-size: 14px;
+    width: 100%;
+  }
+  .dm-input:focus { outline: none; border-color: var(--dm-gold); }
+  .dm-label { font-size: 11px; color: var(--dm-muted); font-family: 'Cinzel', serif; letter-spacing: 0.5px; display: block; margin-bottom: 4px; }
+  .dm-field { margin-bottom: 10px; }
+
+  .dm-btn {
+    padding: 9px 16px;
+    font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 1px;
+    border: none; border-radius: 4px;
+    cursor: pointer; transition: all 0.2s; font-weight: 600;
+  }
+  .dm-btn-gold { background: var(--dm-gold); color: var(--dm-bg); }
+  .dm-btn-gold:hover { background: var(--gold-light); }
+  .dm-btn-red { background: var(--dm-red); color: #fff; }
+  .dm-btn-red:hover { background: #e74c3c; }
+  .dm-btn-green { background: var(--dm-green); color: #fff; }
+  .dm-btn-green:hover { background: #2ecc71; }
+  .dm-btn-outline { background: transparent; border: 1px solid var(--dm-gold); color: var(--dm-gold); }
+  .dm-btn-outline:hover { background: rgba(201,162,39,0.1); }
+  .dm-btn-sm { padding: 5px 10px; font-size: 10px; }
+
+  /* Item selector */
+  .item-tag {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--dm-surface2); border: 1px solid #4d3a22;
+    border-radius: 3px; padding: 3px 8px;
+    font-size: 12px; color: var(--dm-text); margin: 3px;
+  }
+  .item-tag-del { cursor: pointer; color: var(--dm-muted); font-size: 14px; line-height: 1; }
+  .item-tag-del:hover { color: var(--dm-red); }
+
+  /* Toast */
+  #toast {
+    position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+    background: var(--dm-surface); border: 1px solid var(--dm-gold);
+    border-radius: 6px; padding: 10px 18px;
+    font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 1px;
+    color: var(--dm-gold);
+    transform: translateY(80px); opacity: 0;
+    transition: all 0.3s; pointer-events: none;
+  }
+  #toast.show { transform: translateY(0); opacity: 1; }
+
+  /* Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 100;
+    background: rgba(0,0,0,0.7);
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--parchment);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    width: 480px;
+    max-height: 80vh;
+    overflow-y: auto;
+    max-width: 95vw;
+  }
+  .modal-dark { background: var(--dm-surface); border-color: var(--dm-gold); color: var(--dm-text); }
+  .modal h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    color: var(--red);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .modal-dark h2 { color: var(--dm-gold); border-color: #3d2e1a; }
+  .modal-actions { display: flex; gap: 8px; margin-top: 16px; justify-content: flex-end; }
+  .modal-btn {
+    padding: 8px 18px;
+    font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 1px;
+    border: none; border-radius: 4px; cursor: pointer; font-weight: 600;
+    transition: all 0.15s;
+  }
+  .modal-btn-primary { background: var(--red); color: #fff; }
+  .modal-btn-primary:hover { background: var(--red-light); }
+  .modal-btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--ink-muted); }
+  .modal-btn-secondary:hover { background: var(--parchment-dark); }
+  .modal-dark .modal-btn-secondary { border-color: #3d2e1a; color: var(--dm-muted); }
+  .modal-dark .modal-btn-secondary:hover { background: var(--dm-surface2); }
+
+  /* Notes area */
+  .big-textarea { min-height: 200px; font-size: 14px; line-height: 1.7; }
+
+  /* Condition badges */
+  .conditions-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+  .condition-badge {
+    padding: 4px 10px; border-radius: 3px;
+    font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 1px;
+    cursor: pointer; transition: all 0.15s;
+    border: 1px solid var(--border-light);
+    color: var(--ink-muted); background: transparent;
+  }
+  .condition-badge.active { background: var(--red); color: #fff; border-color: var(--red); }
+
+  /* Passive perception etc */
+  .passive-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid rgba(160,120,80,0.2); font-size: 14px; }
+  .passive-row:last-child { border-bottom: none; }
+  .passive-val { font-weight: 600; font-size: 18px; color: var(--red); }
+
+  /* Inspiration */
+  .inspiration-pip {
+    width: 24px; height: 24px; border-radius: 50%;
+    border: 2px solid var(--gold);
+    background: transparent;
+    cursor: pointer; transition: all 0.2s;
+    display: inline-block;
+  }
+  .inspiration-pip.active { background: var(--gold); }
+
+  /* Import/export area */
+  .transfer-preview {
+    background: var(--dm-surface2);
+    border: 1px solid #4d3a22;
+    border-radius: 4px;
+    padding: 12px;
+    margin: 10px 0;
+    font-size: 13px;
+  }
+  .transfer-item { display: flex; justify-content: space-between; padding: 3px 0; }
+  .transfer-item .ti { color: var(--dm-gold); }
+  .transfer-item .tv { color: var(--dm-muted); }
+
+  /* Scrollable lists */
+  .scroll-list { max-height: 220px; overflow-y: auto; }
+  .scroll-list::-webkit-scrollbar { width: 4px; }
+  .scroll-list::-webkit-scrollbar-track { background: transparent; }
+  .scroll-list::-webkit-scrollbar-thumb { background: #4d3a22; border-radius: 2px; }
+
+  .divider { height: 1px; background: var(--border-light); margin: 14px 0; }
+  .dm-divider { height: 1px; background: #3d2e1a; margin: 12px 0; }
+
+  select option { background: var(--parchment); color: var(--ink); }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar"><a href="index.html" style="padding:0 12px;height:44px;display:flex;align-items:center;font-family:'Cinzel',serif;font-size:11px;color:#a08060;text-decoration:none;border-right:1px solid #3d2e1a;letter-spacing:1px;" title="Back to party">← PARTY</a>
+  <h1>⚔ TAVERN</h1><div style="padding:0 14px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:#c9a227;border-right:1px solid #3d2e1a;line-height:44px;">PLAYER 1</div>
+  <div class="mode-tabs">
+    <button class="mode-tab active" onclick="switchMode('player')">Player Sheet</button>
+    <button class="mode-tab" onclick="switchMode('dm')">DM Panel</button>
+  </div>
+  <div class="topbar-actions">
+    <button class="topbar-btn" onclick="saveSheet()">💾 Save</button>
+    <button class="topbar-btn" onclick="exportSheet()">📤 Export</button>
+    <button class="topbar-btn" onclick="triggerImport('full')">📥 Import</button>
+    <button class="topbar-btn danger" onclick="receiveGift()">🎁 Receive from DM</button>
+  </div>
+</div>
+
+<!-- PLAYER PANEL -->
+<div id="player-panel" class="panel active">
+  <div id="sheet-panel">
+
+    <!-- Header -->
+    <div class="sheet-header">
+      <div>
+        <div class="char-name-display" id="display-name">New Character</div>
+        <div class="char-subtitle" id="display-subtitle">Choose your destiny…</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <div>
+          <div style="font-size:10px;font-family:'Cinzel',serif;letter-spacing:1px;color:#a08060;margin-bottom:4px;">INSPIRATION</div>
+          <div class="inspiration-pip" id="inspiration-pip" onclick="toggleInspiration()" title="Inspiration"></div>
+        </div>
+        <div class="hp-widget">
+          <div>
+            <div class="hp-label">HIT POINTS</div>
+            <div style="display:flex;align-items:baseline;gap:6px;margin-top:2px;">
+              <span class="hp-cur" id="hp-cur-display">10</span>
+              <span class="hp-sep">/</span>
+              <span class="hp-max" id="hp-max-display">10</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;margin-left:8px;align-items:center;">
+            <input type="number" id="hp-adjust-amt" value="1" min="1" max="999"
+              style="width:44px;text-align:center;font-size:13px;font-weight:600;
+                     background:rgba(255,255,255,0.15);border:1px solid #8b1a1a;
+                     border-radius:3px;padding:2px 4px;color:#fff;">
+            <button class="hp-btn" onclick="adjustHP(1)" title="Heal">+</button>
+            <button class="hp-btn" onclick="adjustHP(-1)" title="Damage">−</button>
+          </div>
+        </div>
+        <div class="hp-widget" style="background:rgba(139,100,26,0.3);border-color:#8b6a1a;">
+          <div>
+            <div class="hp-label">TEMP HP</div>
+            <div style="display:flex;align-items:baseline;gap:6px;margin-top:2px;">
+              <span style="font-size:24px;font-weight:600;color:#ffd700;line-height:1;" id="thp-display">0</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;margin-left:8px;">
+            <button class="hp-btn" style="border-color:#8b6a1a;" onclick="adjustTHP(1)">+</button>
+            <button class="hp-btn" style="border-color:#8b6a1a;" onclick="adjustTHP(-1)">−</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sheet body -->
+    <div class="sheet-body">
+      <div class="sheet-tabs">
+        <button class="sheet-tab active" onclick="switchSheetTab('core')">Core</button>
+        <button class="sheet-tab" onclick="switchSheetTab('combat')">Combat</button>
+        <button class="sheet-tab" onclick="switchSheetTab('spells')">Spells</button>
+        <button class="sheet-tab" onclick="switchSheetTab('inventory')">Inventory</button>
+        <button class="sheet-tab" onclick="switchSheetTab('features')">Features</button>
+        <button class="sheet-tab" onclick="switchSheetTab('notes')">Notes</button>
+      </div>
+
+      <!-- CORE TAB -->
+      <div id="tab-core" class="sheet-page active">
+        <div class="field-row fr4">
+          <div class="field-group">
+            <label>Character Name</label>
+            <input type="text" id="char-name" placeholder="Aragorn" oninput="updateHeader()">
+          </div>
+          <div class="field-group">
+            <label>Class & Level</label>
+            <input type="text" id="char-class" placeholder="Fighter 5" oninput="updateHeader()">
+          </div>
+          <div class="field-group">
+            <label>Race</label>
+            <input type="text" id="char-race" placeholder="Human" oninput="updateHeader()">
+          </div>
+          <div class="field-group">
+            <label>Background</label>
+            <input type="text" id="char-background" placeholder="Soldier">
+          </div>
+        </div>
+        <div class="field-row fr4">
+          <div class="field-group">
+            <label>Alignment</label>
+            <select id="char-alignment">
+              <option>Lawful Good</option><option>Neutral Good</option><option>Chaotic Good</option>
+              <option>Lawful Neutral</option><option>True Neutral</option><option>Chaotic Neutral</option>
+              <option>Lawful Evil</option><option>Neutral Evil</option><option>Chaotic Evil</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label>Experience Points</label>
+            <input type="number" id="char-xp" value="0" min="0" oninput="updateXP()">
+          </div>
+          <div class="field-group">
+            <label>Level</label>
+            <input type="number" id="char-level" value="1" min="1" max="20" oninput="updateLevel()">
+          </div>
+          <div class="field-group">
+            <label>Proficiency Bonus</label>
+            <input type="number" id="char-prof" value="2" min="2" max="6" readonly style="background:rgba(139,26,26,0.08);cursor:not-allowed;">
+          </div>
+        </div>
+
+        <!-- Ability Scores -->
+        <div class="section">
+          <div class="section-title">Ability Scores <span style="font-weight:400;font-size:10px;color:var(--ink-muted);">(click to edit)</span></div>
+          <div class="stats-grid" id="stats-grid">
+            <!-- rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Saves + Skills -->
+        <div class="two-col">
+          <div class="section">
+            <div class="section-title">Saving Throws</div>
+            <div id="saves-list"></div>
+          </div>
+          <div class="section">
+            <div class="section-title">Passive Scores</div>
+            <div class="passive-row">
+              <span>Passive Perception</span>
+              <span class="passive-val" id="passive-perc">10</span>
+            </div>
+            <div class="passive-row">
+              <span>Passive Investigation</span>
+              <span class="passive-val" id="passive-inv">10</span>
+            </div>
+            <div class="passive-row">
+              <span>Passive Insight</span>
+              <span class="passive-val" id="passive-ins">10</span>
+            </div>
+            <div class="divider"></div>
+            <div class="section-title" style="margin-top:0;">Conditions</div>
+            <div class="conditions-grid" id="conditions-grid"></div>
+          </div>
+        </div>
+
+        <!-- Skills -->
+        <div class="section">
+          <div class="section-title">Skills</div>
+          <div class="two-col" id="skills-list"></div>
+        </div>
+      </div>
+
+      <!-- COMBAT TAB -->
+      <div id="tab-combat" class="sheet-page">
+        <div class="section">
+          <div class="section-title">Combat Stats</div>
+          <div class="combat-grid">
+            <div class="combat-box">
+              <input type="number" id="combat-ac" value="10" style="text-align:center;font-size:22px;font-weight:600;border:none;background:transparent;width:60px;">
+              <span class="combat-label">Armor Class</span>
+            </div>
+            <div class="combat-box">
+              <span class="combat-val" id="combat-init">+0</span>
+              <span class="combat-label">Initiative</span>
+            </div>
+            <div class="combat-box">
+              <input type="number" id="combat-speed" value="30" style="text-align:center;font-size:22px;font-weight:600;border:none;background:transparent;width:60px;">
+              <span class="combat-label">Speed (ft)</span>
+            </div>
+            <div class="combat-box">
+              <input type="number" id="combat-maxhp" value="10" min="1" style="text-align:center;font-size:22px;font-weight:600;border:none;background:transparent;width:60px;" oninput="updateMaxHP()">
+              <span class="combat-label">Max HP</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hit Dice & Death Saves -->
+        <div class="two-col">
+          <div class="section">
+            <div class="section-title">Hit Dice</div>
+            <div class="field-row fr2" style="margin-bottom:8px;">
+              <div>
+                <label>Die Type</label>
+                <select id="hit-die-type">
+                  <option>d6</option><option>d8</option><option selected>d10</option><option>d12</option>
+                </select>
+              </div>
+              <div>
+                <label>Total Dice</label>
+                <input type="number" id="hit-die-total" value="1" min="1" max="20" oninput="renderHitDice()">
+              </div>
+            </div>
+            <div class="hitdice-row" id="hitdice-pips"></div>
+          </div>
+          <div class="section">
+            <div class="section-title">Death Saving Throws</div>
+            <div class="death-saves">
+              <div>
+                <div style="font-size:12px;color:var(--gold);margin-bottom:6px;font-family:'Cinzel',serif;">Successes</div>
+                <div class="save-pips" id="death-success">
+                  <div class="save-pip" onclick="toggleDeathSave('success',0)"></div>
+                  <div class="save-pip" onclick="toggleDeathSave('success',1)"></div>
+                  <div class="save-pip" onclick="toggleDeathSave('success',2)"></div>
+                </div>
+              </div>
+              <div>
+                <div style="font-size:12px;color:var(--red);margin-bottom:6px;font-family:'Cinzel',serif;">Failures</div>
+                <div class="save-pips" id="death-failure">
+                  <div class="save-pip" onclick="toggleDeathSave('failure',0)"></div>
+                  <div class="save-pip" onclick="toggleDeathSave('failure',1)"></div>
+                  <div class="save-pip" onclick="toggleDeathSave('failure',2)"></div>
+                </div>
+              </div>
+            </div>
+            <button class="add-btn" style="margin-top:10px;" onclick="resetDeathSaves()">Reset Death Saves</button>
+          </div>
+        </div>
+
+        <!-- Attacks -->
+        <div class="section">
+          <div class="section-title">Attacks & Actions</div>
+          <table class="inv-table" id="attacks-table">
+            <thead>
+              <tr>
+                <th>Attack Name</th>
+                <th>Attack Bonus</th>
+                <th>Damage</th>
+                <th>Type</th>
+                <th>Notes</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="attacks-body"></tbody>
+          </table>
+          <button class="add-btn" onclick="addAttack()">+ Add Attack</button>
+        </div>
+      </div>
+
+      <!-- SPELLS TAB -->
+      <div id="tab-spells" class="sheet-page">
+        <div class="field-row fr3">
+          <div class="field-group">
+            <label>Spellcasting Class</label>
+            <input type="text" id="spell-class" placeholder="Wizard">
+          </div>
+          <div class="field-group">
+            <label>Spellcasting Ability</label>
+            <select id="spell-ability">
+              <option value="INT">Intelligence</option>
+              <option value="WIS">Wisdom</option>
+              <option value="CHA">Charisma</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label>Spell Save DC / Attack</label>
+            <div style="display:flex;gap:8px;align-items:center;margin-top:4px;">
+              <span style="font-size:20px;font-weight:600;" id="spell-dc">8</span>
+              <span style="color:var(--ink-muted);">DC</span>
+              <span style="font-size:20px;font-weight:600;" id="spell-atk">+0</span>
+              <span style="color:var(--ink-muted);">Atk</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Spell Slots -->
+        <div class="section">
+          <div class="section-title">Spell Slots</div>
+          <div class="slot-grid" id="slot-grid"></div>
+        </div>
+
+        <!-- Spells by level -->
+        <div id="spells-by-level"></div>
+        <button class="add-btn" onclick="openAddSpell()">+ Add Spell</button>
+      </div>
+
+      <!-- INVENTORY TAB -->
+      <div id="tab-inventory" class="sheet-page">
+        <!-- Currency -->
+        <div class="section">
+          <div class="section-title">Currency</div>
+          <div class="currency-grid">
+            <div class="currency-box">
+              <div class="currency-coin coin-pp">PP</div>
+              <input type="number" id="cur-pp" class="currency-input" value="0" min="0">
+              <div class="currency-name">Platinum</div>
+            </div>
+            <div class="currency-box">
+              <div class="currency-coin coin-gp">GP</div>
+              <input type="number" id="cur-gp" class="currency-input" value="0" min="0">
+              <div class="currency-name">Gold</div>
+            </div>
+            <div class="currency-box">
+              <div class="currency-coin coin-ep">EP</div>
+              <input type="number" id="cur-ep" class="currency-input" value="0" min="0">
+              <div class="currency-name">Electrum</div>
+            </div>
+            <div class="currency-box">
+              <div class="currency-coin coin-sp">SP</div>
+              <input type="number" id="cur-sp" class="currency-input" value="0" min="0">
+              <div class="currency-name">Silver</div>
+            </div>
+            <div class="currency-box">
+              <div class="currency-coin coin-cp">CP</div>
+              <input type="number" id="cur-cp" class="currency-input" value="0" min="0">
+              <div class="currency-name">Copper</div>
+            </div>
+          </div>
+          <div style="margin-top:10px;font-size:13px;color:var(--ink-muted);text-align:right;" id="gp-total"></div>
+        </div>
+
+        <!-- Items -->
+        <div class="section">
+          <div class="section-title">Equipment & Items</div>
+          <table class="inv-table">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Wt (lb)</th>
+                <th>Notes</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="inventory-body"></tbody>
+          </table>
+          <div style="margin-top:8px;display:flex;gap:10px;align-items:center;">
+            <button class="add-btn" onclick="addInventoryItem()">+ Add Item</button>
+            <span style="margin-left:auto;font-size:13px;color:var(--ink-muted);">Total weight: <strong id="total-weight">0</strong> lb</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- FEATURES TAB -->
+      <div id="tab-features" class="sheet-page">
+        <div class="section">
+          <div class="section-title">Racial & Class Features</div>
+          <div id="features-list" class="scroll-list"></div>
+          <button class="add-btn" onclick="addFeature()">+ Add Feature</button>
+        </div>
+        <div class="section">
+          <div class="section-title">Proficiencies</div>
+          <div class="field-row fr2">
+            <div class="field-group">
+              <label>Armor</label>
+              <textarea id="prof-armor" placeholder="Light armor, medium armor, shields…" style="min-height:60px;"></textarea>
+            </div>
+            <div class="field-group">
+              <label>Weapons</label>
+              <textarea id="prof-weapons" placeholder="Simple weapons, martial weapons…" style="min-height:60px;"></textarea>
+            </div>
+          </div>
+          <div class="field-row fr2">
+            <div class="field-group">
+              <label>Tools</label>
+              <textarea id="prof-tools" placeholder="Thieves' tools, musical instrument…" style="min-height:60px;"></textarea>
+            </div>
+            <div class="field-group">
+              <label>Languages</label>
+              <textarea id="prof-languages" placeholder="Common, Elvish, Dwarvish…" style="min-height:60px;"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">Personality</div>
+          <div class="field-row fr2">
+            <div class="field-group"><label>Personality Traits</label><textarea id="personality-traits" style="min-height:70px;"></textarea></div>
+            <div class="field-group"><label>Ideals</label><textarea id="personality-ideals" style="min-height:70px;"></textarea></div>
+          </div>
+          <div class="field-row fr2">
+            <div class="field-group"><label>Bonds</label><textarea id="personality-bonds" style="min-height:70px;"></textarea></div>
+            <div class="field-group"><label>Flaws</label><textarea id="personality-flaws" style="min-height:70px;"></textarea></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NOTES TAB -->
+      <div id="tab-notes" class="sheet-page">
+        <div class="section">
+          <div class="section-title">Session Notes</div>
+          <textarea id="session-notes" class="big-textarea" placeholder="Notes from your adventures…"></textarea>
+        </div>
+        <div class="section">
+          <div class="section-title">Appearance</div>
+          <div class="field-row fr3">
+            <div class="field-group"><label>Age</label><input type="text" id="app-age"></div>
+            <div class="field-group"><label>Height</label><input type="text" id="app-height"></div>
+            <div class="field-group"><label>Weight</label><input type="text" id="app-weight"></div>
+          </div>
+          <div class="field-row fr3">
+            <div class="field-group"><label>Eyes</label><input type="text" id="app-eyes"></div>
+            <div class="field-group"><label>Skin</label><input type="text" id="app-skin"></div>
+            <div class="field-group"><label>Hair</label><input type="text" id="app-hair"></div>
+          </div>
+          <div class="field-group"><label>Backstory</label><textarea id="char-backstory" class="big-textarea"></textarea></div>
+        </div>
+      </div>
+    </div><!-- /sheet-body -->
+  </div><!-- /sheet-panel -->
+</div><!-- /player-panel -->
+
+<!-- DM PANEL -->
+<div id="dm-panel" class="panel">
+  <div class="dm-grid">
+    <!-- Sidebar: Players -->
+    <div class="dm-sidebar">
+      <div class="dm-section">
+        <div class="dm-section-title">⚔ Party Members</div>
+        <div id="dm-player-list"></div>
+        <button class="dm-btn dm-btn-outline dm-btn-sm" style="width:100%;margin-top:8px;" onclick="addDMPlayer()">+ Add Player</button>
+      </div>
+
+      <div class="dm-section">
+        <div class="dm-section-title">📜 Transaction Log</div>
+        <div class="scroll-list" id="tx-log" style="max-height:280px;"></div>
+      </div>
+    </div>
+
+    <!-- Main: Exchange -->
+    <div class="dm-main">
+      <div class="dm-section">
+        <div class="dm-section-title">🎁 Give to Player</div>
+
+        <div class="dm-field">
+          <label class="dm-label">Target Player</label>
+          <select class="dm-input" id="dm-target-player">
+            <option value="">— Select a player —</option>
+          </select>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <!-- Currency -->
+          <div>
+            <div class="dm-section-title" style="margin-bottom:8px;">Grant Currency</div>
+            <div class="field-row fr2" style="margin-bottom:6px;">
+              <div><label class="dm-label">Gold (GP)</label><input type="number" class="dm-input" id="give-gp" value="0" min="0"></div>
+              <div><label class="dm-label">Silver (SP)</label><input type="number" class="dm-input" id="give-sp" value="0" min="0"></div>
+            </div>
+            <div class="field-row fr3">
+              <div><label class="dm-label">Platinum</label><input type="number" class="dm-input" id="give-pp" value="0" min="0"></div>
+              <div><label class="dm-label">Electrum</label><input type="number" class="dm-input" id="give-ep" value="0" min="0"></div>
+              <div><label class="dm-label">Copper</label><input type="number" class="dm-input" id="give-cp" value="0" min="0"></div>
+            </div>
+          </div>
+
+          <!-- Items -->
+          <div>
+            <div class="dm-section-title" style="margin-bottom:8px;">Grant Items</div>
+            <div class="dm-field">
+              <label class="dm-label">Item Name</label>
+              <div style="display:flex;gap:6px;">
+                <input type="text" class="dm-input" id="give-item-name" placeholder="Potion of Healing" style="flex:1;">
+                <input type="number" class="dm-input" id="give-item-qty" value="1" min="1" style="width:60px;">
+                <button class="dm-btn dm-btn-outline dm-btn-sm" onclick="addGiveItem()" style="white-space:nowrap;">Add</button>
+              </div>
+            </div>
+            <div class="dm-field">
+              <label class="dm-label">Item Notes</label>
+              <input type="text" class="dm-input" id="give-item-notes" placeholder="+1 magical, requires attunement…">
+            </div>
+            <div id="give-items-list" style="min-height:32px;"></div>
+          </div>
+        </div>
+
+        <div class="dm-divider"></div>
+
+        <!-- Take currency -->
+        <div class="dm-section-title" style="margin-bottom:8px;">Take Currency (player pays you)</div>
+        <div class="field-row fr5" style="grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:10px;">
+          <div><label class="dm-label">PP</label><input type="number" class="dm-input" id="take-pp" value="0" min="0"></div>
+          <div><label class="dm-label">GP</label><input type="number" class="dm-input" id="take-gp" value="0" min="0"></div>
+          <div><label class="dm-label">EP</label><input type="number" class="dm-input" id="take-ep" value="0" min="0"></div>
+          <div><label class="dm-label">SP</label><input type="number" class="dm-input" id="take-sp" value="0" min="0"></div>
+          <div><label class="dm-label">CP</label><input type="number" class="dm-input" id="take-cp" value="0" min="0"></div>
+        </div>
+
+        <div class="dm-field">
+          <label class="dm-label">Transaction Note (optional)</label>
+          <input type="text" class="dm-input" id="give-note" placeholder="Reward for clearing the dungeon…">
+        </div>
+
+        <!-- Preview -->
+        <div id="transfer-preview" class="transfer-preview" style="display:none;"></div>
+
+        <div style="display:flex;gap:10px;margin-top:12px;">
+          <button class="dm-btn dm-btn-gold" onclick="previewTransfer()" style="flex:1;">Preview Transaction</button>
+          <button class="dm-btn dm-btn-green" onclick="executeTransfer()" style="flex:1;">📤 Export Gift File</button>
+        </div>
+      </div>
+
+      <!-- Quick DM tools -->
+      <div class="dm-section">
+        <div class="dm-section-title">⚡ Quick Tools</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+          <div>
+            <label class="dm-label">Rest Type</label>
+            <select class="dm-input" id="rest-type"><option>Short Rest</option><option>Long Rest</option></select>
+          </div>
+          <div>
+            <label class="dm-label">Apply To</label>
+            <select class="dm-input" id="rest-target-player"><option value="all">All Players</option></select>
+          </div>
+          <div style="display:flex;align-items:flex-end;">
+            <button class="dm-btn dm-btn-outline" style="width:100%;" onclick="applyRest()">Apply Rest</button>
+          </div>
+        </div>
+        <div class="dm-divider"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div>
+            <label class="dm-label">Grant XP to All</label>
+            <div style="display:flex;gap:6px;">
+              <input type="number" class="dm-input" id="grant-xp-val" value="0" min="0">
+              <button class="dm-btn dm-btn-outline dm-btn-sm" onclick="grantXPAll()">Grant</button>
+            </div>
+          </div>
+          <div>
+            <label class="dm-label">Export All Sheets</label>
+            <button class="dm-btn dm-btn-outline" style="width:100%;margin-top:0;" onclick="exportAllSheets()">📤 Export Party Data</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /dm-panel -->
+
+<!-- Modals -->
+<div class="modal-overlay" id="stat-modal">
+  <div class="modal">
+    <h2 id="stat-modal-title">Edit Strength</h2>
+    <div class="field-group">
+      <label>Base Score</label>
+      <input type="number" id="stat-modal-input" min="1" max="30" value="10">
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-secondary" onclick="closeModal('stat-modal')">Cancel</button>
+      <button class="modal-btn modal-btn-primary" onclick="saveStatModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="spell-modal">
+  <div class="modal">
+    <h2>Add Spell</h2>
+    <div class="field-row fr2">
+      <div class="field-group"><label>Spell Name</label><input type="text" id="spell-name-inp" placeholder="Fireball"></div>
+      <div class="field-group">
+        <label>Level</label>
+        <select id="spell-level-inp">
+          <option value="0">Cantrip</option>
+          <option value="1">1st</option><option value="2">2nd</option><option value="3">3rd</option>
+          <option value="4">4th</option><option value="5">5th</option><option value="6">6th</option>
+          <option value="7">7th</option><option value="8">8th</option><option value="9">9th</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-row fr3">
+      <div class="field-group"><label>School</label><input type="text" id="spell-school-inp" placeholder="Evocation"></div>
+      <div class="field-group"><label>Cast Time</label><input type="text" id="spell-cast-inp" placeholder="1 action"></div>
+      <div class="field-group"><label>Range</label><input type="text" id="spell-range-inp" placeholder="150 ft"></div>
+    </div>
+    <div class="field-row fr3">
+      <div class="field-group"><label>Duration</label><input type="text" id="spell-duration-inp" placeholder="Instantaneous"></div>
+      <div class="field-group"><label>Components</label><input type="text" id="spell-comps-inp" placeholder="V, S, M"></div>
+      <div class="field-group" style="display:flex;align-items:center;gap:8px;padding-top:20px;">
+        <input type="checkbox" id="spell-conc-inp" style="width:16px;height:16px;">
+        <label style="margin:0;">Concentration</label>
+      </div>
+    </div>
+    <div class="field-group"><label>Description</label><textarea id="spell-desc-inp" style="min-height:70px;"></textarea></div>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-secondary" onclick="closeModal('spell-modal')">Cancel</button>
+      <button class="modal-btn modal-btn-primary" onclick="saveSpell()">Add Spell</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="feature-modal">
+  <div class="modal">
+    <h2>Add Feature / Trait</h2>
+    <div class="field-row fr2">
+      <div class="field-group"><label>Feature Name</label><input type="text" id="feat-name-inp"></div>
+      <div class="field-group"><label>Source</label><input type="text" id="feat-src-inp" placeholder="Class, Race, Background…"></div>
+    </div>
+    <div class="field-group"><label>Description</label><textarea id="feat-desc-inp" style="min-height:100px;"></textarea></div>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-secondary" onclick="closeModal('feature-modal')">Cancel</button>
+      <button class="modal-btn modal-btn-primary" onclick="saveFeature()">Add</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="hp-modal">
+  <div class="modal">
+    <h2 id="hp-modal-title">Adjust HP</h2>
+    <div class="field-group">
+      <label>Amount</label>
+      <input type="number" id="hp-modal-amount" value="0" min="0">
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-secondary" onclick="closeModal('hp-modal')">Cancel</button>
+      <button class="modal-btn modal-btn-primary" id="hp-modal-confirm">Apply</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="dm-player-modal">
+  <div class="modal modal-dark">
+    <h2>Add Player to Party</h2>
+    <div class="field-group">
+      <label style="color:var(--dm-muted);">Player Name</label>
+      <input type="text" class="dm-input" id="dm-new-player-name" placeholder="Thorin Oakenshield">
+    </div>
+    <div class="field-row fr2">
+      <div class="field-group">
+        <label style="color:var(--dm-muted);">Class</label>
+        <input type="text" class="dm-input" id="dm-new-player-class" placeholder="Paladin 3">
+      </div>
+      <div class="field-group">
+        <label style="color:var(--dm-muted);">Max HP</label>
+        <input type="number" class="dm-input" id="dm-new-player-hp" value="20" min="1">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-secondary" onclick="closeModal('dm-player-modal')">Cancel</button>
+      <button class="dm-btn dm-btn-gold" onclick="saveDMPlayer()">Add to Party</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden file input -->
+<input type="file" id="import-input" accept=".json" style="display:none;" onchange="handleImport(event)">
+<input type="file" id="gift-input" accept=".json" style="display:none;" onchange="handleGiftImport(event)">
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+// ─── DATA MODEL ───────────────────────────────────────────────────────────────
+const STATS = ['STR','DEX','CON','INT','WIS','CHA'];
+const STAT_NAMES = {STR:'Strength',DEX:'Dexterity',CON:'Constitution',INT:'Intelligence',WIS:'Wisdom',CHA:'Charisma'};
+const SAVES = ['STR','DEX','CON','INT','WIS','CHA'];
+const CONDITIONS = ['Blinded','Charmed','Deafened','Exhausted','Frightened','Grappled','Incapacitated','Invisible','Paralyzed','Petrified','Poisoned','Prone','Restrained','Stunned','Unconscious'];
+const SKILLS = [
+  {name:'Acrobatics',attr:'DEX'},{name:'Animal Handling',attr:'WIS'},{name:'Arcana',attr:'INT'},
+  {name:'Athletics',attr:'STR'},{name:'Deception',attr:'CHA'},{name:'History',attr:'INT'},
+  {name:'Insight',attr:'WIS'},{name:'Intimidation',attr:'CHA'},{name:'Investigation',attr:'INT'},
+  {name:'Medicine',attr:'WIS'},{name:'Nature',attr:'INT'},{name:'Perception',attr:'WIS'},
+  {name:'Performance',attr:'CHA'},{name:'Persuasion',attr:'CHA'},{name:'Religion',attr:'INT'},
+  {name:'Sleight of Hand',attr:'DEX'},{name:'Stealth',attr:'DEX'},{name:'Survival',attr:'WIS'}
+];
+const XP_THRESHOLDS = [0,300,900,2700,6500,14000,23000,34000,48000,64000,85000,100000,120000,140000,165000,195000,225000,265000,305000,355000];
+const PROF_BY_LEVEL = [0,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6];
+const SLOT_TABLE = [
+  [0,0,0,0,0,0,0,0,0],
+  [2,0,0,0,0,0,0,0,0],
+  [3,0,0,0,0,0,0,0,0],
+  [4,2,0,0,0,0,0,0,0],
+  [4,3,0,0,0,0,0,0,0],
+  [4,3,2,0,0,0,0,0,0],
+  [4,3,3,0,0,0,0,0,0],
+  [4,3,3,1,0,0,0,0,0],
+  [4,3,3,2,0,0,0,0,0],
+  [4,3,3,3,1,0,0,0,0],
+  [4,3,3,3,2,0,0,0,0],
+  [4,3,3,3,2,1,0,0,0],
+  [4,3,3,3,2,1,0,0,0],
+  [4,3,3,3,2,1,1,0,0],
+  [4,3,3,3,2,1,1,0,0],
+  [4,3,3,3,2,1,1,1,0],
+  [4,3,3,3,2,1,1,1,0],
+  [4,3,3,3,2,1,1,1,1],
+  [4,3,3,3,3,1,1,1,1],
+  [4,3,3,3,3,2,1,1,1],
+  [4,3,3,3,3,2,2,1,1],
+];
+
+let sheet = {
+  name:'', charClass:'', race:'', background:'', alignment:'Lawful Good',
+  xp:0, level:1, prof:2, inspiration:false,
+  hpMax:10, hpCur:10, hpTemp:0,
+  stats:{STR:10,DEX:10,CON:10,INT:10,WIS:10,CHA:10},
+  saveProficiencies:{STR:false,DEX:false,CON:false,INT:false,WIS:false,CHA:false},
+  skillProficiencies:{},
+  skillExpertise:{},
+  ac:10, speed:30,
+  hitDieType:'d10', hitDieTotal:1, hitDiceUsed:0,
+  deathSuccesses:[false,false,false],
+  deathFailures:[false,false,false],
+  conditions:{},
+  attacks:[],
+  spellClass:'', spellAbility:'INT',
+  spells:[],
+  slotMax:[],
+  slotUsed:[],
+  inventory:[],
+  currency:{pp:0,gp:0,ep:0,sp:0,cp:0},
+  features:[],
+  profArmor:'', profWeapons:'', profTools:'', profLanguages:'',
+  personalityTraits:'', ideals:'', bonds:'', flaws:'',
+  sessionNotes:'', backstory:'',
+  age:'', height:'', weight:'', eyes:'', skin:'', hair:''
+};
+
+let dmPlayers = [];
+let txLog = [];
+let giveItems = [];
+let editStatKey = null;
+
+// ─── UTILITY ──────────────────────────────────────────────────────────────────
+function mod(score){ return Math.floor((score-10)/2); }
+function fmod(n){ return (n>=0?'+':'')+n; }
+function profBonus(){ return sheet.prof; }
+
+function getSkillMod(skill){
+  const base = mod(sheet.stats[skill.attr]);
+  const p = sheet.skillProficiencies[skill.name];
+  const e = sheet.skillExpertise[skill.name];
+  if(e) return base + profBonus()*2;
+  if(p) return base + profBonus();
+  return base;
+}
+function getSaveMod(attr){
+  const base = mod(sheet.stats[attr]);
+  return sheet.saveProficiencies[attr] ? base + profBonus() : base;
+}
+
+function toast(msg, dur=2500){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), dur);
+}
+
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+
+// ─── MODE SWITCH ──────────────────────────────────────────────────────────────
+function switchMode(mode){
+  document.querySelectorAll('.mode-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById(mode+'-panel').classList.add('active');
+  if(mode==='dm') renderDMPanel();
+}
+
+function switchSheetTab(tab){
+  document.querySelectorAll('.sheet-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.sheet-page').forEach(p=>p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+  if(tab==='inventory') updateCurrencyTotal();
+  if(tab==='spells') updateSpellStats();
+}
+
+// ─── HEADER ───────────────────────────────────────────────────────────────────
+function updateHeader(){
+  sheet.name = document.getElementById('char-name').value;
+  sheet.charClass = document.getElementById('char-class').value;
+  sheet.race = document.getElementById('char-race').value;
+  document.getElementById('display-name').textContent = sheet.name || 'New Character';
+  const parts = [sheet.charClass, sheet.race].filter(Boolean);
+  document.getElementById('display-subtitle').textContent = parts.join(' · ') || 'Choose your destiny…';
+}
+
+// ─── STATS ────────────────────────────────────────────────────────────────────
+function renderStats(){
+  const grid = document.getElementById('stats-grid');
+  grid.innerHTML = STATS.map(s=>`
+    <div class="stat-box" onclick="editStat('${s}')">
+      <span class="stat-name">${s}</span>
+      <span class="stat-val">${sheet.stats[s]}</span>
+      <span class="stat-mod">${fmod(mod(sheet.stats[s]))}</span>
+    </div>`).join('');
+}
+
+function editStat(key){
+  editStatKey = key;
+  document.getElementById('stat-modal-title').textContent = 'Edit '+STAT_NAMES[key];
+  document.getElementById('stat-modal-input').value = sheet.stats[key];
+  openModal('stat-modal');
+  setTimeout(()=>document.getElementById('stat-modal-input').focus(),100);
+}
+function saveStatModal(){
+  const v = parseInt(document.getElementById('stat-modal-input').value)||10;
+  sheet.stats[editStatKey] = Math.max(1,Math.min(30,v));
+  closeModal('stat-modal');
+  renderStats();
+  renderSaves();
+  renderSkills();
+  updatePassives();
+  updateSpellStats();
+  updateCombatInit();
+}
+
+// ─── SAVES ────────────────────────────────────────────────────────────────────
+function renderSaves(){
+  const el = document.getElementById('saves-list');
+  el.innerHTML = SAVES.map(s=>`
+    <div class="check-row">
+      <div class="prof-dot ${sheet.saveProficiencies[s]?'proficient':''}" onclick="toggleSaveProf('${s}')"></div>
+      <span class="check-label">${STAT_NAMES[s]}</span>
+      <span class="check-mod">${fmod(getSaveMod(s))}</span>
+    </div>`).join('');
+}
+function toggleSaveProf(s){
+  sheet.saveProficiencies[s]=!sheet.saveProficiencies[s];
+  renderSaves();
+}
+
+// ─── SKILLS ───────────────────────────────────────────────────────────────────
+function renderSkills(){
+  const el = document.getElementById('skills-list');
+  const half = Math.ceil(SKILLS.length/2);
+  let html='<div>';
+  SKILLS.forEach((sk,i)=>{
+    if(i===half) html+='</div><div>';
+    const p=sheet.skillProficiencies[sk.name];
+    const e=sheet.skillExpertise[sk.name];
+    html+=`<div class="check-row">
+      <div class="prof-dot ${e?'expert':p?'proficient':''}" onclick="cycleSkillProf('${sk.name}')" title="${e?'Expert':p?'Proficient':'Not proficient'} (click to cycle)"></div>
+      <span class="check-label">${sk.name}</span>
+      <span class="check-attr" style="min-width:30px;">${sk.attr}</span>
+      <span class="check-mod">${fmod(getSkillMod(sk))}</span>
+    </div>`;
+  });
+  html+='</div>';
+  el.innerHTML=html;
+}
+function cycleSkillProf(name){
+  const p=sheet.skillProficiencies[name];
+  const e=sheet.skillExpertise[name];
+  if(!p){ sheet.skillProficiencies[name]=true; }
+  else if(p&&!e){ sheet.skillExpertise[name]=true; }
+  else { sheet.skillProficiencies[name]=false; sheet.skillExpertise[name]=false; }
+  renderSkills();
+  updatePassives();
+}
+
+// ─── PASSIVES ─────────────────────────────────────────────────────────────────
+function updatePassives(){
+  const percSk = SKILLS.find(s=>s.name==='Perception');
+  const invSk = SKILLS.find(s=>s.name==='Investigation');
+  const insSk = SKILLS.find(s=>s.name==='Insight');
+  document.getElementById('passive-perc').textContent = 10+getSkillMod(percSk);
+  document.getElementById('passive-inv').textContent = 10+getSkillMod(invSk);
+  document.getElementById('passive-ins').textContent = 10+getSkillMod(insSk);
+}
+
+// ─── CONDITIONS ───────────────────────────────────────────────────────────────
+function renderConditions(){
+  document.getElementById('conditions-grid').innerHTML = CONDITIONS.map(c=>`
+    <button class="condition-badge ${sheet.conditions[c]?'active':''}" onclick="toggleCondition('${c}')">${c}</button>`).join('');
+}
+function toggleCondition(c){
+  sheet.conditions[c]=!sheet.conditions[c];
+  renderConditions();
+}
+
+// ─── LEVEL & XP ───────────────────────────────────────────────────────────────
+function updateLevel(){
+  const lvl = parseInt(document.getElementById('char-level').value)||1;
+  sheet.level = Math.max(1,Math.min(20,lvl));
+  sheet.prof = PROF_BY_LEVEL[sheet.level];
+  document.getElementById('char-prof').value = sheet.prof;
+  renderSaves();
+  renderSkills();
+  updatePassives();
+  updateSpellStats();
+  renderSpellSlots();
+}
+function updateXP(){
+  sheet.xp = parseInt(document.getElementById('char-xp').value)||0;
+  // auto level check
+  let newLvl = 1;
+  for(let i=1;i<XP_THRESHOLDS.length;i++){
+    if(sheet.xp>=XP_THRESHOLDS[i]) newLvl=i; else break;
+  }
+  if(newLvl>sheet.level){
+    toast(`🎉 Level Up! You reached level ${newLvl}!`,4000);
+    document.getElementById('char-level').value = newLvl;
+    updateLevel();
+  }
+}
+
+// ─── HP ───────────────────────────────────────────────────────────────────────
+function adjustHP(dir){
+  const amtEl = document.getElementById('hp-adjust-amt');
+  const n = parseInt(amtEl ? amtEl.value : 1) || 1;
+  if(dir===1){
+    sheet.hpCur = Math.min(sheet.hpMax, sheet.hpCur + n);
+  } else {
+    let dmg = n;
+    if(sheet.hpTemp > 0){
+      const absorbed = Math.min(dmg, sheet.hpTemp);
+      sheet.hpTemp -= absorbed;
+      dmg -= absorbed;
+      document.getElementById('thp-display').textContent = sheet.hpTemp;
+    }
+    sheet.hpCur = Math.max(0, sheet.hpCur - dmg);
+  }
+  document.getElementById('hp-cur-display').textContent = sheet.hpCur;
+}
+function adjustTHP(dir){
+  sheet.hpTemp = Math.max(0, sheet.hpTemp+dir);
+  document.getElementById('thp-display').textContent = sheet.hpTemp;
+}
+function updateMaxHP(){
+  sheet.hpMax = parseInt(document.getElementById('combat-maxhp').value)||1;
+  document.getElementById('hp-max-display').textContent = sheet.hpMax;
+}
+
+// ─── INSPIRATION ──────────────────────────────────────────────────────────────
+function toggleInspiration(){
+  sheet.inspiration = !sheet.inspiration;
+  document.getElementById('inspiration-pip').classList.toggle('active',sheet.inspiration);
+}
+
+// ─── COMBAT ───────────────────────────────────────────────────────────────────
+function updateCombatInit(){
+  document.getElementById('combat-init').textContent = fmod(mod(sheet.stats.DEX));
+}
+
+function renderHitDice(){
+  const total = parseInt(document.getElementById('hit-die-total').value)||1;
+  sheet.hitDieTotal = total;
+  const type = document.getElementById('hit-die-type').value;
+  sheet.hitDieType = type;
+  const pips = document.getElementById('hitdice-pips');
+  let html='';
+  for(let i=0;i<total;i++){
+    html+=`<div class="hd-pip ${i<sheet.hitDiceUsed?'used':''}" onclick="toggleHD(${i})" title="${i<sheet.hitDiceUsed?'Used':'Available'}">${type}</div>`;
+  }
+  pips.innerHTML=html;
+}
+function toggleHD(i){
+  // mark used up to i
+  if(i<sheet.hitDiceUsed) sheet.hitDiceUsed=i;
+  else sheet.hitDiceUsed=i+1;
+  renderHitDice();
+}
+
+// Death Saves
+function toggleDeathSave(type,idx){
+  if(type==='success') sheet.deathSuccesses[idx]=!sheet.deathSuccesses[idx];
+  else sheet.deathFailures[idx]=!sheet.deathFailures[idx];
+  renderDeathSaves();
+}
+function renderDeathSaves(){
+  ['success','failure'].forEach(t=>{
+    const arr = t==='success'?sheet.deathSuccesses:sheet.deathFailures;
+    const cls = t==='success'?'success':'failure';
+    document.getElementById('death-'+t).querySelectorAll('.save-pip').forEach((p,i)=>{
+      p.className='save-pip'+(arr[i]?' '+cls:'');
+    });
+  });
+}
+function resetDeathSaves(){
+  sheet.deathSuccesses=[false,false,false];
+  sheet.deathFailures=[false,false,false];
+  renderDeathSaves();
+  toast('Death saves reset');
+}
+
+// Attacks
+function addAttack(){
+  sheet.attacks.push({name:'',bonus:'+0',damage:'1d6',type:'Slashing',notes:''});
+  renderAttacks();
+}
+function renderAttacks(){
+  document.getElementById('attacks-body').innerHTML = sheet.attacks.map((a,i)=>`
+    <tr>
+      <td><input type="text" value="${a.name}" onchange="sheet.attacks[${i}].name=this.value" placeholder="Longsword" style="min-width:100px;"></td>
+      <td><input type="text" value="${a.bonus}" onchange="sheet.attacks[${i}].bonus=this.value" style="width:60px;text-align:center;"></td>
+      <td><input type="text" value="${a.damage}" onchange="sheet.attacks[${i}].damage=this.value" style="width:70px;text-align:center;"></td>
+      <td><input type="text" value="${a.type}" onchange="sheet.attacks[${i}].type=this.value" style="width:80px;"></td>
+      <td><input type="text" value="${a.notes}" onchange="sheet.attacks[${i}].notes=this.value"></td>
+      <td><button class="del-btn" onclick="removeAttack(${i})">×</button></td>
+    </tr>`).join('');
+}
+function removeAttack(i){ sheet.attacks.splice(i,1); renderAttacks(); }
+
+// ─── SPELLS ───────────────────────────────────────────────────────────────────
+function updateSpellStats(){
+  const ability = document.getElementById('spell-ability').value;
+  const m = mod(sheet.stats[ability]);
+  const dc = 8 + profBonus() + m;
+  const atk = profBonus() + m;
+  document.getElementById('spell-dc').textContent = dc;
+  document.getElementById('spell-atk').textContent = fmod(atk);
+}
+
+function renderSpellSlots(){
+  const lvl = sheet.level;
+  const slots = SLOT_TABLE[Math.min(lvl,20)];
+  if(!sheet.slotMax.length || sheet.slotMax.length!==9){
+    sheet.slotMax = [...slots];
+    sheet.slotUsed = new Array(9).fill(0);
+  }
+  const grid = document.getElementById('slot-grid');
+  let html='';
+  for(let i=0;i<9;i++){
+    const max = sheet.slotMax[i];
+    const used = sheet.slotUsed[i]||0;
+    html+=`<div class="slot-box">
+      <div class="slot-label">${['1st','2nd','3rd','4th','5th','6th','7th','8th','9th'][i]}</div>
+      <div style="display:flex;gap:3px;justify-content:center;flex-wrap:wrap;">
+        <input type="number" value="${max}" min="0" max="9" style="width:36px;text-align:center;font-size:13px;" onchange="sheet.slotMax[${i}]=parseInt(this.value)||0;renderSpellSlotPips(${i});" title="Max slots">
+      </div>
+      <div class="slot-pips" id="slot-pips-${i}"></div>
+      <div class="slot-total" id="slot-total-${i}"></div>
+    </div>`;
+  }
+  grid.innerHTML=html;
+  for(let i=0;i<9;i++) renderSpellSlotPips(i);
+}
+function renderSpellSlotPips(i){
+  const max=sheet.slotMax[i]||0;
+  const used=sheet.slotUsed[i]||0;
+  const el=document.getElementById('slot-pips-'+i);
+  if(!el) return;
+  let html='';
+  for(let j=0;j<max;j++){
+    html+=`<div class="slot-pip ${j<used?'used':''}" onclick="toggleSlot(${i},${j})"></div>`;
+  }
+  el.innerHTML=html;
+  document.getElementById('slot-total-'+i).textContent = max?`${max-used}/${max} left`:'—';
+}
+function toggleSlot(i,j){
+  if(j<sheet.slotUsed[i]) sheet.slotUsed[i]=j;
+  else sheet.slotUsed[i]=j+1;
+  renderSpellSlotPips(i);
+}
+
+function renderSpellsByLevel(){
+  const container = document.getElementById('spells-by-level');
+  const byLevel = {};
+  sheet.spells.forEach(sp=>{
+    if(!byLevel[sp.level]) byLevel[sp.level]=[];
+    byLevel[sp.level].push(sp);
+  });
+  let html='';
+  const levelNames = ['Cantrips','1st Level','2nd Level','3rd Level','4th Level','5th Level','6th Level','7th Level','8th Level','9th Level'];
+  [0,1,2,3,4,5,6,7,8,9].forEach(lvl=>{
+    if(!byLevel[lvl]||!byLevel[lvl].length) return;
+    html+=`<div class="section"><div class="section-title">${levelNames[lvl]}</div>`;
+    byLevel[lvl].forEach((sp,idx)=>{
+      const realIdx = sheet.spells.indexOf(sp);
+      html+=`<div class="spell-row">
+        <div class="spell-prepared ${sp.prepared?'prepared':''}" onclick="togglePrepared(${realIdx})" title="Toggle prepared"></div>
+        <div>
+          <span class="spell-name">${sp.name}</span>
+          ${sp.concentration?'<span class="spell-concentration" style="margin-left:8px;">C</span>':''}
+          <div class="spell-school">${[sp.school,sp.castTime,sp.range].filter(Boolean).join(' · ')}</div>
+        </div>
+        <div style="font-size:12px;color:var(--ink-muted);">${sp.components||''}</div>
+        <button class="del-btn" onclick="removeSpell(${realIdx})">×</button>
+      </div>`;
+    });
+    html+='</div>';
+  });
+  container.innerHTML=html;
+}
+function togglePrepared(i){ sheet.spells[i].prepared=!sheet.spells[i].prepared; renderSpellsByLevel(); }
+function removeSpell(i){ sheet.spells.splice(i,1); renderSpellsByLevel(); }
+function openAddSpell(){ openModal('spell-modal'); }
+function saveSpell(){
+  sheet.spells.push({
+    name: document.getElementById('spell-name-inp').value||'Unnamed',
+    level: parseInt(document.getElementById('spell-level-inp').value)||0,
+    school: document.getElementById('spell-school-inp').value,
+    castTime: document.getElementById('spell-cast-inp').value,
+    range: document.getElementById('spell-range-inp').value,
+    duration: document.getElementById('spell-duration-inp').value,
+    components: document.getElementById('spell-comps-inp').value,
+    concentration: document.getElementById('spell-conc-inp').checked,
+    description: document.getElementById('spell-desc-inp').value,
+    prepared: false
+  });
+  closeModal('spell-modal');
+  renderSpellsByLevel();
+  ['spell-name-inp','spell-school-inp','spell-cast-inp','spell-range-inp','spell-duration-inp','spell-comps-inp','spell-desc-inp'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('spell-conc-inp').checked=false;
+}
+
+// ─── INVENTORY ────────────────────────────────────────────────────────────────
+function addInventoryItem(){
+  sheet.inventory.push({name:'',qty:1,weight:0,notes:'',source:''});
+  renderInventory();
+}
+function renderInventory(){
+  const body = document.getElementById('inventory-body');
+  body.innerHTML = sheet.inventory.map((item,i)=>`
+    <tr>
+      <td><input type="text" value="${item.name}" onchange="sheet.inventory[${i}].name=this.value" placeholder="Item name" style="min-width:120px;"></td>
+      <td>
+        <div class="qty-control">
+          <button class="qty-btn" onclick="adjustQty(${i},-1)">−</button>
+          <span class="qty-val">${item.qty}</span>
+          <button class="qty-btn" onclick="adjustQty(${i},1)">+</button>
+        </div>
+      </td>
+      <td><input type="number" value="${item.weight}" onchange="sheet.inventory[${i}].weight=parseFloat(this.value)||0;updateTotalWeight();" style="width:60px;text-align:center;" step="0.5" min="0"></td>
+      <td><input type="text" value="${item.notes}" onchange="sheet.inventory[${i}].notes=this.value" placeholder="Description, effects…"></td>
+      <td><button class="del-btn" onclick="removeItem(${i})">×</button></td>
+    </tr>`).join('');
+  updateTotalWeight();
+}
+function adjustQty(i,d){
+  sheet.inventory[i].qty = Math.max(0,sheet.inventory[i].qty+d);
+  renderInventory();
+}
+function removeItem(i){ sheet.inventory.splice(i,1); renderInventory(); }
+function updateTotalWeight(){
+  const total = sheet.inventory.reduce((s,it)=>s+it.weight*it.qty,0);
+  document.getElementById('total-weight').textContent = total.toFixed(1);
+}
+function updateCurrencyTotal(){
+  const {pp,gp,ep,sp,cp} = getSheetCurrency();
+  const total = pp*10 + gp + ep*0.5 + sp*0.1 + cp*0.01;
+  document.getElementById('gp-total').textContent = `≈ ${total.toFixed(2)} GP total`;
+}
+function getSheetCurrency(){
+  return {
+    pp: parseInt(document.getElementById('cur-pp').value)||0,
+    gp: parseInt(document.getElementById('cur-gp').value)||0,
+    ep: parseInt(document.getElementById('cur-ep').value)||0,
+    sp: parseInt(document.getElementById('cur-sp').value)||0,
+    cp: parseInt(document.getElementById('cur-cp').value)||0,
+  };
+}
+
+// ─── FEATURES ─────────────────────────────────────────────────────────────────
+function addFeature(){ openModal('feature-modal'); }
+function saveFeature(){
+  sheet.features.push({
+    name: document.getElementById('feat-name-inp').value||'Unnamed',
+    source: document.getElementById('feat-src-inp').value,
+    desc: document.getElementById('feat-desc-inp').value
+  });
+  closeModal('feature-modal');
+  renderFeatures();
+  document.getElementById('feat-name-inp').value='';
+  document.getElementById('feat-src-inp').value='';
+  document.getElementById('feat-desc-inp').value='';
+}
+function renderFeatures(){
+  document.getElementById('features-list').innerHTML = sheet.features.map((f,i)=>`
+    <div class="feature-row">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div><span class="feature-name">${f.name}</span> <span class="feature-src">${f.source?'· '+f.source:''}</span></div>
+        <button class="del-btn" onclick="removeFeature(${i})">×</button>
+      </div>
+      ${f.desc?`<div class="feature-desc">${f.desc}</div>`:''}
+    </div>`).join('');
+}
+function removeFeature(i){ sheet.features.splice(i,1); renderFeatures(); }
+
+// ─── SAVE / LOAD ──────────────────────────────────────────────────────────────
+function gatherSheet(){
+  sheet.name = document.getElementById('char-name').value;
+  sheet.charClass = document.getElementById('char-class').value;
+  sheet.race = document.getElementById('char-race').value;
+  sheet.background = document.getElementById('char-background').value;
+  sheet.alignment = document.getElementById('char-alignment').value;
+  sheet.xp = parseInt(document.getElementById('char-xp').value)||0;
+  sheet.level = parseInt(document.getElementById('char-level').value)||1;
+  sheet.ac = parseInt(document.getElementById('combat-ac').value)||10;
+  sheet.speed = parseInt(document.getElementById('combat-speed').value)||30;
+  sheet.hpMax = parseInt(document.getElementById('combat-maxhp').value)||1;
+  sheet.hitDieType = document.getElementById('hit-die-type').value;
+  sheet.hitDieTotal = parseInt(document.getElementById('hit-die-total').value)||1;
+  sheet.spellClass = document.getElementById('spell-class').value;
+  sheet.spellAbility = document.getElementById('spell-ability').value;
+  sheet.currency = getSheetCurrency();
+  sheet.profArmor = document.getElementById('prof-armor').value;
+  sheet.profWeapons = document.getElementById('prof-weapons').value;
+  sheet.profTools = document.getElementById('prof-tools').value;
+  sheet.profLanguages = document.getElementById('prof-languages').value;
+  sheet.personalityTraits = document.getElementById('personality-traits').value;
+  sheet.ideals = document.getElementById('personality-ideals').value;
+  sheet.bonds = document.getElementById('personality-bonds').value;
+  sheet.flaws = document.getElementById('personality-flaws').value;
+  sheet.sessionNotes = document.getElementById('session-notes').value;
+  sheet.backstory = document.getElementById('char-backstory').value;
+  sheet.age = document.getElementById('app-age').value;
+  sheet.height = document.getElementById('app-height').value;
+  sheet.weight = document.getElementById('app-weight').value;
+  sheet.eyes = document.getElementById('app-eyes').value;
+  sheet.skin = document.getElementById('app-skin').value;
+  sheet.hair = document.getElementById('app-hair').value;
+}
+
+function applySheet(data){
+  Object.assign(sheet, data);
+  // Fill inputs
+  const set = (id,v)=>{ const el=document.getElementById(id); if(el) el.value=v||''; };
+  set('char-name', sheet.name);
+  set('char-class', sheet.charClass);
+  set('char-race', sheet.race);
+  set('char-background', sheet.background);
+  document.getElementById('char-alignment').value = sheet.alignment||'Lawful Good';
+  set('char-xp', sheet.xp);
+  set('char-level', sheet.level);
+  set('char-prof', sheet.prof);
+  set('combat-ac', sheet.ac);
+  set('combat-speed', sheet.speed);
+  set('combat-maxhp', sheet.hpMax);
+  set('hit-die-total', sheet.hitDieTotal);
+  document.getElementById('hit-die-type').value = sheet.hitDieType||'d10';
+  set('spell-class', sheet.spellClass);
+  document.getElementById('spell-ability').value = sheet.spellAbility||'INT';
+  // currency
+  if(sheet.currency){
+    set('cur-pp', sheet.currency.pp);
+    set('cur-gp', sheet.currency.gp);
+    set('cur-ep', sheet.currency.ep);
+    set('cur-sp', sheet.currency.sp);
+    set('cur-cp', sheet.currency.cp);
+  }
+  set('prof-armor', sheet.profArmor);
+  set('prof-weapons', sheet.profWeapons);
+  set('prof-tools', sheet.profTools);
+  set('prof-languages', sheet.profLanguages);
+  set('personality-traits', sheet.personalityTraits);
+  set('personality-ideals', sheet.ideals);
+  set('personality-bonds', sheet.bonds);
+  set('personality-flaws', sheet.flaws);
+  set('session-notes', sheet.sessionNotes);
+  set('char-backstory', sheet.backstory);
+  set('app-age', sheet.age);
+  set('app-height', sheet.height);
+  set('app-weight', sheet.weight);
+  set('app-eyes', sheet.eyes);
+  set('app-skin', sheet.skin);
+  set('app-hair', sheet.hair);
+  // HP display
+  document.getElementById('hp-cur-display').textContent = sheet.hpCur;
+  document.getElementById('hp-max-display').textContent = sheet.hpMax;
+  document.getElementById('thp-display').textContent = sheet.hpTemp||0;
+  document.getElementById('inspiration-pip').classList.toggle('active', !!sheet.inspiration);
+  // Re-render components
+  updateHeader();
+  renderStats();
+  renderSaves();
+  renderSkills();
+  updatePassives();
+  updateCombatInit();
+  renderConditions();
+  renderHitDice();
+  renderDeathSaves();
+  renderAttacks();
+  renderSpellSlots();
+  updateSpellStats();
+  renderSpellsByLevel();
+  renderInventory();
+  renderFeatures();
+  updateCurrencyTotal();
+}
+
+function saveSheet(){
+  gatherSheet();
+  try { localStorage.setItem('dnd5e_sheet_player1', JSON.stringify(sheet)); toast('✓ Saved to browser'); } catch(e){ toast('Save failed'); }
+}
+
+function exportSheet(){
+  gatherSheet();
+  const name = (sheet.name||'character').replace(/\s+/g,'_');
+  downloadJSON(sheet, name+'_sheet.json');
+  toast('📤 Exported!');
+}
+
+function triggerImport(type){
+  document.getElementById('import-input').click();
+}
+function handleImport(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const r = new FileReader();
+  r.onload = ev=>{ try{ applySheet(JSON.parse(ev.target.result)); toast('📥 Sheet loaded!'); } catch(err){ toast('Error reading file'); } };
+  r.readAsText(file);
+  e.target.value='';
+}
+
+function downloadJSON(data, filename){
+  const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+}
+
+// ─── DM PANEL ─────────────────────────────────────────────────────────────────
+function renderDMPanel(){
+  renderDMPlayerList();
+  renderTxLog();
+  syncDMDropdowns();
+}
+
+function renderDMPlayerList(){
+  const el = document.getElementById('dm-player-list');
+  if(!dmPlayers.length){
+    el.innerHTML='<div style="color:var(--dm-muted);font-size:13px;text-align:center;padding:10px;">No players yet</div>';
+    return;
+  }
+  el.innerHTML = dmPlayers.map((p,i)=>`
+    <div class="player-card" onclick="selectDMPlayer(${i})" id="pc-card-${i}">
+      <div>
+        <div class="pc-name">${p.name}</div>
+        <div class="pc-class">${p.charClass||''}</div>
+      </div>
+      <div class="pc-hp">${p.hpCur||'?'}/${p.hpMax||'?'}</div>
+    </div>`).join('');
+}
+
+function addDMPlayer(){ openModal('dm-player-modal'); }
+function saveDMPlayer(){
+  const name = document.getElementById('dm-new-player-name').value.trim();
+  if(!name){ toast('Enter a player name'); return; }
+  dmPlayers.push({
+    name,
+    charClass: document.getElementById('dm-new-player-class').value,
+    hpMax: parseInt(document.getElementById('dm-new-player-hp').value)||20,
+    hpCur: parseInt(document.getElementById('dm-new-player-hp').value)||20,
+    currency:{pp:0,gp:0,ep:0,sp:0,cp:0},
+    inventory:[]
+  });
+  closeModal('dm-player-modal');
+  document.getElementById('dm-new-player-name').value='';
+  document.getElementById('dm-new-player-class').value='';
+  renderDMPlayerList();
+  syncDMDropdowns();
+  toast(`${name} added to party`);
+}
+
+function selectDMPlayer(i){
+  document.querySelectorAll('.player-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('pc-card-'+i).classList.add('selected');
+  document.getElementById('dm-target-player').value=i;
+}
+
+function syncDMDropdowns(){
+  const opts = dmPlayers.map((p,i)=>`<option value="${i}">${p.name}</option>`).join('');
+  document.getElementById('dm-target-player').innerHTML = '<option value="">— Select a player —</option>'+opts;
+  document.getElementById('rest-target-player').innerHTML = '<option value="all">All Players</option>'+opts;
+}
+
+// Give items
+function addGiveItem(){
+  const name = document.getElementById('give-item-name').value.trim();
+  if(!name){ toast('Enter item name'); return; }
+  const qty = parseInt(document.getElementById('give-item-qty').value)||1;
+  const notes = document.getElementById('give-item-notes').value;
+  giveItems.push({name,qty,notes});
+  document.getElementById('give-item-name').value='';
+  document.getElementById('give-item-notes').value='';
+  document.getElementById('give-item-qty').value='1';
+  renderGiveItems();
+}
+function renderGiveItems(){
+  document.getElementById('give-items-list').innerHTML = giveItems.map((it,i)=>`
+    <span class="item-tag">${it.qty}× ${it.name}<span class="item-tag-del" onclick="removeGiveItem(${i})">×</span></span>`).join('');
+}
+function removeGiveItem(i){ giveItems.splice(i,1); renderGiveItems(); }
+
+function previewTransfer(){
+  const pi = document.getElementById('dm-target-player').value;
+  if(pi==='') { toast('Select a player first'); return; }
+  const player = dmPlayers[parseInt(pi)];
+  const gp=parseInt(document.getElementById('give-gp').value)||0;
+  const sp=parseInt(document.getElementById('give-sp').value)||0;
+  const pp=parseInt(document.getElementById('give-pp').value)||0;
+  const ep=parseInt(document.getElementById('give-ep').value)||0;
+  const cp=parseInt(document.getElementById('give-cp').value)||0;
+  const tgp=parseInt(document.getElementById('take-gp').value)||0;
+  const tsp=parseInt(document.getElementById('take-sp').value)||0;
+  const tpp=parseInt(document.getElementById('take-pp').value)||0;
+  const tep=parseInt(document.getElementById('take-ep').value)||0;
+  const tcp=parseInt(document.getElementById('take-cp').value)||0;
+  const hasCur = gp||sp||pp||ep||cp||tgp||tsp||tpp||tep||tcp;
+  const hasItems = giveItems.length>0;
+  if(!hasCur && !hasItems){ toast('Add currency or items to give'); return; }
+  let html='';
+  if(giveItems.length) html+=giveItems.map(it=>`<div class="transfer-item"><span class="ti">${it.qty}× ${it.name}</span><span class="tv">${it.notes||''}</span></div>`).join('');
+  if(gp||sp||pp||ep||cp){
+    if(pp) html+=`<div class="transfer-item"><span class="ti">+ ${pp} PP</span></div>`;
+    if(gp) html+=`<div class="transfer-item"><span class="ti">+ ${gp} GP</span></div>`;
+    if(ep) html+=`<div class="transfer-item"><span class="ti">+ ${ep} EP</span></div>`;
+    if(sp) html+=`<div class="transfer-item"><span class="ti">+ ${sp} SP</span></div>`;
+    if(cp) html+=`<div class="transfer-item"><span class="ti">+ ${cp} CP</span></div>`;
+  }
+  if(tgp||tsp||tpp||tep||tcp){
+    if(tpp) html+=`<div class="transfer-item"><span style="color:var(--dm-red)">− ${tpp} PP</span></div>`;
+    if(tgp) html+=`<div class="transfer-item"><span style="color:var(--dm-red)">− ${tgp} GP</span></div>`;
+    if(tep) html+=`<div class="transfer-item"><span style="color:var(--dm-red)">− ${tep} EP</span></div>`;
+    if(tsp) html+=`<div class="transfer-item"><span style="color:var(--dm-red)">− ${tsp} SP</span></div>`;
+    if(tcp) html+=`<div class="transfer-item"><span style="color:var(--dm-red)">− ${tcp} CP</span></div>`;
+  }
+  document.getElementById('transfer-preview').innerHTML = `<div style="font-size:12px;color:var(--dm-gold);margin-bottom:6px;font-family:'Cinzel',serif;">GIFT TO ${player.name.toUpperCase()}</div>`+html;
+  document.getElementById('transfer-preview').style.display='block';
+  toast('Preview ready — click Export to generate file');
+}
+
+function executeTransfer(){
+  const pi = document.getElementById('dm-target-player').value;
+  if(pi==='') { toast('Select a player first'); return; }
+  const player = dmPlayers[parseInt(pi)];
+  const gift = {
+    type: 'dnd5e_gift',
+    from: 'DM',
+    to: player.name,
+    timestamp: new Date().toISOString(),
+    note: document.getElementById('give-note').value,
+    giveItems: [...giveItems],
+    giveCurrency: {
+      pp: parseInt(document.getElementById('give-pp').value)||0,
+      gp: parseInt(document.getElementById('give-gp').value)||0,
+      ep: parseInt(document.getElementById('give-ep').value)||0,
+      sp: parseInt(document.getElementById('give-sp').value)||0,
+      cp: parseInt(document.getElementById('give-cp').value)||0,
+    },
+    takeCurrency: {
+      pp: parseInt(document.getElementById('take-pp').value)||0,
+      gp: parseInt(document.getElementById('take-gp').value)||0,
+      ep: parseInt(document.getElementById('take-ep').value)||0,
+      sp: parseInt(document.getElementById('take-sp').value)||0,
+      cp: parseInt(document.getElementById('take-cp').value)||0,
+    }
+  };
+  // Log it
+  txLog.unshift({...gift});
+  renderTxLog();
+  // Download
+  downloadJSON(gift, `gift_to_${player.name.replace(/\s+/g,'_')}.json`);
+  // Reset
+  giveItems=[];
+  renderGiveItems();
+  ['give-gp','give-sp','give-pp','give-ep','give-cp','take-gp','take-sp','take-pp','take-ep','take-cp'].forEach(id=>document.getElementById(id).value=0);
+  document.getElementById('give-note').value='';
+  document.getElementById('transfer-preview').style.display='none';
+  toast(`🎁 Gift file for ${player.name} exported!`, 3000);
+}
+
+function renderTxLog(){
+  const el = document.getElementById('tx-log');
+  if(!txLog.length){ el.innerHTML='<div style="color:var(--dm-muted);font-size:13px;padding:8px 0;">No transactions yet</div>'; return; }
+  el.innerHTML = txLog.slice(0,20).map(tx=>{
+    const when = new Date(tx.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    const items = tx.giveItems.map(i=>i.qty+'× '+i.name).join(', ');
+    const cur = Object.entries(tx.giveCurrency).filter(([,v])=>v>0).map(([k,v])=>v+k.toUpperCase()).join(' ');
+    const take = Object.entries(tx.takeCurrency).filter(([,v])=>v>0).map(([k,v])=>v+k.toUpperCase()).join(' ');
+    const what = [items,cur,take?'−'+take:''].filter(Boolean).join('; ');
+    return `<div class="tx-row">
+      <span class="tx-icon">🎁</span>
+      <div class="tx-detail">
+        <span class="tx-who">${tx.to}</span>
+        <span class="tx-what"> — ${what||'(empty)'}</span>
+        ${tx.note?`<div style="font-size:12px;color:var(--dm-gold);font-style:italic;">${tx.note}</div>`:''}
+      </div>
+      <span class="tx-when">${when}</span>
+    </div>`;
+  }).join('');
+}
+
+// Receive gift on player side
+function receiveGift(){ document.getElementById('gift-input').click(); }
+function handleGiftImport(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const r = new FileReader();
+  r.onload = ev=>{
+    try{
+      const gift = JSON.parse(ev.target.result);
+      if(gift.type!=='dnd5e_gift'){ toast('Not a valid gift file'); return; }
+      // Apply items
+      gift.giveItems.forEach(it=>{
+        sheet.inventory.push({name:it.name,qty:it.qty,weight:0,notes:it.notes||''});
+      });
+      // Apply given currency
+      const cur = document.getElementById('cur-gp') ? getSheetCurrency() : sheet.currency;
+      cur.pp=(cur.pp||0)+(gift.giveCurrency.pp||0);
+      cur.gp=(cur.gp||0)+(gift.giveCurrency.gp||0);
+      cur.ep=(cur.ep||0)+(gift.giveCurrency.ep||0);
+      cur.sp=(cur.sp||0)+(gift.giveCurrency.sp||0);
+      cur.cp=(cur.cp||0)+(gift.giveCurrency.cp||0);
+      // Apply taken currency
+      cur.pp=Math.max(0,cur.pp-(gift.takeCurrency.pp||0));
+      cur.gp=Math.max(0,cur.gp-(gift.takeCurrency.gp||0));
+      cur.ep=Math.max(0,cur.ep-(gift.takeCurrency.ep||0));
+      cur.sp=Math.max(0,cur.sp-(gift.takeCurrency.sp||0));
+      cur.cp=Math.max(0,cur.cp-(gift.takeCurrency.cp||0));
+      sheet.currency=cur;
+      document.getElementById('cur-pp').value=cur.pp;
+      document.getElementById('cur-gp').value=cur.gp;
+      document.getElementById('cur-ep').value=cur.ep;
+      document.getElementById('cur-sp').value=cur.sp;
+      document.getElementById('cur-cp').value=cur.cp;
+      renderInventory();
+      saveSheet();
+      const msg = [
+        gift.giveItems.length?`Got: ${gift.giveItems.map(i=>i.qty+'× '+i.name).join(', ')}`:'',
+        Object.values(gift.giveCurrency).some(v=>v>0)?`Gold received`:'',
+        gift.note?`Note: ${gift.note}`:''
+      ].filter(Boolean).join(' | ');
+      toast(`🎁 Gift received from DM! ${msg}`, 4000);
+      // Switch to inventory tab to show
+      document.querySelectorAll('.sheet-tab').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('.sheet-page').forEach(p=>p.classList.remove('active'));
+      document.querySelector('[onclick="switchSheetTab(\'inventory\')"]').classList.add('active');
+      document.getElementById('tab-inventory').classList.add('active');
+    } catch(err){ toast('Error reading gift file'); }
+  };
+  r.readAsText(file);
+  e.target.value='';
+}
+
+// Rest
+function applyRest(){
+  const type = document.getElementById('rest-type').value;
+  if(type==='Long Rest'){
+    sheet.hpCur = sheet.hpMax;
+    sheet.hpTemp = 0;
+    sheet.hitDiceUsed = Math.max(0, sheet.hitDiceUsed - Math.floor(sheet.hitDieTotal/2));
+    sheet.slotUsed = new Array(9).fill(0);
+    sheet.deathSuccesses=[false,false,false];
+    sheet.deathFailures=[false,false,false];
+    document.getElementById('hp-cur-display').textContent = sheet.hpCur;
+    document.getElementById('thp-display').textContent = 0;
+    for(let i=0;i<9;i++) renderSpellSlotPips(i);
+    renderHitDice();
+    renderDeathSaves();
+    toast('🌙 Long rest complete! HP, slots, hit dice restored.');
+  } else {
+    toast('☕ Short rest noted. Don\'t forget to spend hit dice if needed!');
+  }
+}
+
+function grantXPAll(){
+  const xp = parseInt(document.getElementById('grant-xp-val').value)||0;
+  if(!xp){ toast('Enter XP amount'); return; }
+  sheet.xp += xp;
+  document.getElementById('char-xp').value = sheet.xp;
+  updateXP();
+  toast(`+${xp} XP granted!`);
+}
+
+function exportAllSheets(){
+  gatherSheet();
+  const data = {playerSheet: sheet, party: dmPlayers, log: txLog, exported: new Date().toISOString()};
+  downloadJSON(data, 'party_data.json');
+  toast('📤 Party data exported');
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+function init(){
+  renderStats();
+  renderSaves();
+  renderSkills();
+  updatePassives();
+  renderConditions();
+  renderAttacks();
+  renderSpellSlots();
+  renderSpellsByLevel();
+  renderInventory();
+  renderFeatures();
+  updateCombatInit();
+  // Try load from localStorage
+  try{
+    const saved = localStorage.getItem('dnd5e_sheet_player1');
+    if(saved) applySheet(JSON.parse(saved));
+  } catch(e){}
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    document.querySelectorAll('.modal-overlay').forEach(m=>m.classList.remove('open'));
+  }
+});
+
+init();
+</script>
+</body>
+</html>
