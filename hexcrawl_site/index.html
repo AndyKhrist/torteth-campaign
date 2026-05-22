@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Tavern — Party Hub</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&display=swap');
+:root {
+  --gold:#c9a227;--gold-l:#f0c040;--red:#8b1a1a;
+  --ink:#1a1209;--panel:#16100a;--panel2:#231a0e;--panel3:#3d2e1a;
+  --muted:#a08060;--text:#f0e8d0;--parch:#f5eedc;--parch-d:#e8dfc4;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{min-height:100vh;background:#1a1209;font-family:'Crimson Pro',Georgia,serif;color:var(--text);}
+
+body {
+  background: #1a1209;
+  background-image:
+    radial-gradient(ellipse at 20% 20%, rgba(139,26,26,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 80%, rgba(201,162,39,0.06) 0%, transparent 60%);
+  min-height: 100vh;
+}
+
+.page { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+
+/* Header */
+.hero {
+  text-align: center;
+  padding: 48px 20px 40px;
+  border-bottom: 1px solid var(--panel3);
+  margin-bottom: 40px;
+}
+.hero-emblem {
+  font-size: 48px;
+  margin-bottom: 12px;
+  display: block;
+}
+.hero h1 {
+  font-family: 'Cinzel', serif;
+  font-size: 36px;
+  color: var(--gold);
+  letter-spacing: 6px;
+  margin-bottom: 8px;
+}
+.hero p {
+  font-size: 15px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  font-family: 'Cinzel', serif;
+}
+
+/* Section titles */
+.section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--red);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--panel3);
+}
+
+/* Player grid */
+.player-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+  margin-bottom: 40px;
+}
+
+.player-card {
+  background: var(--panel2);
+  border: 1px solid var(--panel3);
+  border-radius: 6px;
+  padding: 20px;
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  overflow: hidden;
+}
+.player-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--gold);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.player-card:hover {
+  border-color: var(--gold);
+  background: #2d2015;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.4);
+}
+.player-card:hover::before { opacity: 1; }
+
+.card-icon { font-size: 28px; margin-bottom: 4px; }
+.card-label {
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: var(--gold);
+}
+.card-sub {
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+.card-hint {
+  font-size: 11px;
+  color: var(--panel3);
+  margin-top: 4px;
+  font-style: italic;
+}
+.player-card:hover .card-hint { color: var(--muted); }
+
+/* DM card */
+.dm-card {
+  background: #1e1208;
+  border-color: #6b3d10;
+}
+.dm-card::before { background: #e67e22; }
+.dm-card:hover { border-color: #e67e22; background: #2a1a0a; }
+.dm-card .card-label { color: #e67e22; }
+
+/* Instructions */
+.instructions {
+  background: var(--panel2);
+  border: 1px solid var(--panel3);
+  border-radius: 6px;
+  padding: 20px 24px;
+  margin-bottom: 32px;
+}
+.instructions h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+.instructions ol {
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 2;
+}
+.instructions ol li { color: var(--text); }
+.instructions ol li span { color: var(--muted); }
+.instructions strong { color: var(--gold); }
+
+/* Transaction section */
+.tx-box {
+  background: var(--panel2);
+  border: 1px solid var(--panel3);
+  border-radius: 6px;
+  padding: 20px 24px;
+  margin-bottom: 32px;
+}
+.tx-box h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: #e67e22;
+  margin-bottom: 10px;
+}
+.tx-steps {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+.tx-steps strong { color: var(--text); display: block; margin-bottom: 4px; }
+.tx-step-num {
+  font-family: 'Cinzel', serif;
+  font-size: 20px;
+  color: var(--panel3);
+  float: left;
+  margin-right: 8px;
+  line-height: 1;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 24px;
+  font-size: 11px;
+  color: var(--panel3);
+  letter-spacing: 2px;
+  font-family: 'Cinzel', serif;
+  border-top: 1px solid var(--panel3);
+  margin-top: 20px;
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="hero">
+    <span class="hero-emblem">⚔</span>
+    <h1>THE TAVERN</h1>
+    <p>Party Hub &nbsp;·&nbsp; D&amp;D 5e Campaign</p>
+  </div>
+
+  <!-- Player Sheets -->
+  <div class="section-title">Character Sheets</div>
+  <div class="player-grid">
+    <a href="player1.html" class="player-card">
+      <div class="card-icon">🛡</div>
+      <div class="card-label">Player 1</div>
+      <div class="card-sub">Character Sheet</div>
+      <div class="card-hint">Click to open your sheet →</div>
+    </a>
+    <a href="player2.html" class="player-card">
+      <div class="card-icon">⚔</div>
+      <div class="card-label">Player 2</div>
+      <div class="card-sub">Character Sheet</div>
+      <div class="card-hint">Click to open your sheet →</div>
+    </a>
+    <a href="player3.html" class="player-card">
+      <div class="card-icon">🗡</div>
+      <div class="card-label">Player 3</div>
+      <div class="card-sub">Character Sheet</div>
+      <div class="card-hint">Click to open your sheet →</div>
+    </a>
+    <a href="player4.html" class="player-card">
+      <div class="card-icon">🏹</div>
+      <div class="card-label">Player 4</div>
+      <div class="card-sub">Character Sheet</div>
+      <div class="card-hint">Click to open your sheet →</div>
+    </a>
+    <a href="player5.html" class="player-card">
+      <div class="card-icon">✨</div>
+      <div class="card-label">Player 5</div>
+      <div class="card-sub">Character Sheet</div>
+      <div class="card-hint">Click to open your sheet →</div>
+    </a>
+    <a href="player6.html" class="player-card">
+      <div class="card-icon">🎵</div>
+      <div class="card-label">Player 6</div>
+      <div class="card-sub">Character Sheet</div>
+      <div class="card-hint">Click to open your sheet →</div>
+    </a>
+  </div>
+
+  <!-- DM -->
+  <div class="section-title">Dungeon Master</div>
+  <div class="player-grid" style="margin-bottom:40px;">
+    <a href="dm.html" class="player-card dm-card">
+      <div class="card-icon">📖</div>
+      <div class="card-label">DM Panel</div>
+      <div class="card-sub">Full sheet + gift tools</div>
+      <div class="card-hint">Your view — don't share this link</div>
+    </a>
+  </div>
+
+  <!-- How it works -->
+  <div class="section-title">How to Use</div>
+  <div class="instructions" style="margin-bottom:16px;">
+    <h3>Getting Started</h3>
+    <ol>
+      <li>Each player <strong>bookmarks their own link</strong> <span>— don't share the wrong one</span></li>
+      <li>Fill in your character info, hit <strong>💾 Save</strong> <span>— it saves in your browser</span></li>
+      <li>Also download a <strong>.json backup</strong> after each session <span>— just in case</span></li>
+      <li>If you ever switch devices, use <strong>📥 Import</strong> to load your backup</li>
+    </ol>
+  </div>
+
+  <!-- Transactions -->
+  <div class="tx-box">
+    <h3>🎁 DM Item &amp; Gold Transactions</h3>
+    <div class="tx-steps">
+      <div>
+        <strong>DM side</strong>
+        Open your sheet → go to DM Panel tab → select the player → add gold or items → click <strong>Export Gift File</strong> → a .json file downloads
+      </div>
+      <div>
+        <strong>Player side</strong>
+        Receive the .json file via Discord / iMessage / email → open your sheet → click <strong>🎁 Receive from DM</strong> → select the file → inventory and gold update automatically
+      </div>
+    </div>
+  </div>
+
+</div>
+<footer>THE TAVERN &nbsp;·&nbsp; D&amp;D 5E &nbsp;·&nbsp; KEEP THIS URL BOOKMARKED</footer>
+</body>
+</html>
