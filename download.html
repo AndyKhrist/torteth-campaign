@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D&D 5e Character Sheet — Beta</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --parchment: #f5eedc;
+    --parchment-dark: #e8dfc4;
+    --parchment-deep: #d6c9a8;
+    --ink: #1a1209;
+    --ink-light: #3d2e1a;
+    --ink-muted: #7a6a52;
+    --red: #8b1a1a;
+    --gold: #c9a227;
+    --gold-light: #f0c040;
+    --border: #a08060;
+  }
+
+  html, body {
+    min-height: 100vh;
+    background-color: var(--ink);
+    background-image:
+      radial-gradient(ellipse at 20% 20%, rgba(201,162,39,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 80%, rgba(139,26,26,0.07) 0%, transparent 60%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    font-family: 'Crimson Pro', Georgia, serif;
+  }
+
+  .card {
+    background: var(--parchment);
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    max-width: 520px;
+    width: 100%;
+    border-radius: 2px;
+    padding: 3rem 2.5rem;
+    position: relative;
+    box-shadow:
+      0 0 0 1px var(--border),
+      0 0 0 4px var(--parchment),
+      0 0 0 5px var(--border),
+      0 20px 60px rgba(0,0,0,0.6),
+      inset 0 1px 0 rgba(255,255,255,0.4);
+    animation: fadeUp 0.6s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Corner ornaments */
+  .card::before, .card::after {
+    content: '✦';
+    position: absolute;
+    color: var(--gold);
+    font-size: 1rem;
+    opacity: 0.6;
+  }
+  .card::before { top: 1rem; left: 1.25rem; }
+  .card::after  { bottom: 1rem; right: 1.25rem; }
+
+  .corner-br, .corner-tl {
+    position: absolute;
+    color: var(--gold);
+    font-size: 1rem;
+    opacity: 0.6;
+  }
+  .corner-tl { top: 1rem; right: 1.25rem; }
+  .corner-br { bottom: 1rem; left: 1.25rem; }
+
+  .eyebrow {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0.75rem 0 1.5rem;
+    color: var(--gold);
+    opacity: 0.7;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border), transparent);
+  }
+  .divider-icon { font-size: 0.9rem; flex-shrink: 0; }
+
+  h1 {
+    font-family: 'Cinzel Decorative', 'Cinzel', serif;
+    font-size: clamp(1.4rem, 5vw, 1.9rem);
+    font-weight: 700;
+    color: var(--ink);
+    text-align: center;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+  }
+
+  h1 span {
+    display: block;
+    font-size: 0.55em;
+    font-weight: 400;
+    font-family: 'Cinzel', serif;
+    color: var(--red);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 0.3em;
+  }
+
+  .body-text {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--ink-light);
+    margin: 1.5rem 0;
+    text-align: center;
+  }
+
+  .feature-list {
+    list-style: none;
+    margin: 1.5rem 0 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .feature-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 0.95rem;
+    color: var(--ink-light);
+    line-height: 1.5;
+  }
+  .feature-list li::before {
+    content: '⚔';
+    color: var(--gold);
+    font-size: 0.8rem;
+    margin-top: 0.15em;
+    flex-shrink: 0;
+  }
+
+  .download-btn {
+    display: block;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background: var(--red);
+    color: var(--parchment);
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    text-align: center;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.3),
+      0 4px 12px rgba(139,26,26,0.4),
+      inset 0 1px 0 rgba(255,255,255,0.15);
+    transition: all 0.15s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .download-btn:hover {
+    background: #a01f1f;
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.4),
+      0 6px 20px rgba(139,26,26,0.5),
+      inset 0 1px 0 rgba(255,255,255,0.15);
+    transform: translateY(-1px);
+  }
+  .download-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.4), 0 2px 6px rgba(139,26,26,0.4);
+  }
+  .download-btn .btn-sub {
+    display: block;
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.8rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    text-transform: none;
+    opacity: 0.8;
+    margin-top: 0.2rem;
+  }
+
+  .footnote {
+    margin-top: 1.5rem;
+    font-size: 0.82rem;
+    color: var(--ink-muted);
+    text-align: center;
+    font-style: italic;
+    line-height: 1.6;
+  }
+
+  .beta-badge {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.2em 0.6em;
+    border-radius: 2px;
+    margin-bottom: 0.75rem;
+    vertical-align: middle;
+  }
+
+  @media (max-width: 420px) {
+    .card { padding: 2rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <span class="corner-tl">✦</span>
+  <span class="corner-br">✦</span>
+
+  <p class="eyebrow">Beta Access</p>
+
+  <h1>
+    D&amp;D 5e Character Sheet
+    <span>Digital &bull; No App Required</span>
+  </h1>
+
+  <div class="divider"><span class="divider-icon">⚜</span></div>
+
+  <p class="body-text">
+    A self-contained character sheet that lives in your browser.
+    No account. No app. No internet required after download.
+  </p>
+
+  <ul class="feature-list">
+    <li>AC, spell slots, and weapon mastery auto-calculated</li>
+    <li>Inventory &amp; currency tracker with carry weight</li>
+    <li>Visual spell slot pip tracker — tap to use, tap to recover</li>
+    <li>Saves automatically — survives browser close &amp; phone restarts</li>
+    <li>Dark mode and parchment theme, switchable anytime</li>
+    <li>Works on iPhone and Android — no install needed</li>
+  </ul>
+
+  <a href="player1_v11.html" download="dnd5e-character-sheet.html" class="download-btn">
+    Download Your Sheet
+    <span class="btn-sub">One file &bull; Opens in any browser</span>
+  </a>
+
+  <p class="footnote">
+    Each download creates its own unique character — your data stays on your device only.<br>
+    Tip: use the Export button inside the sheet to save a backup file. If you ever lose your data, import it back in.<br><br>
+    Beta feedback welcome. This is a work in progress.
+  </p>
+</div>
+
+</body>
+</html>
