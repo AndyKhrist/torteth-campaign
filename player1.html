@@ -3146,13 +3146,13 @@ function renderAttacks(){
     return `<tr>
       <td>
         <select class="weapon-select" onchange="selectWeapon(${i},this.value)">${WEAPON_OPTIONS_HTML}</select>
-        <input type="text" value="${(a.name||'').replace(/"/g,'&quot;')}" onchange="sheet.attacks[${i}].name=this.value;autoSave();" placeholder="Weapon name" style="margin-top:3px;width:100%;font-size:13px;">
+        <input type="text" value="${esc(a.name)}" onchange="sheet.attacks[${i}].name=this.value;autoSave();" placeholder="Weapon name" style="margin-top:3px;width:100%;font-size:13px;">
       </td>
       <td data-label="ATK BONUS"><input type="text" value="${a.bonus}" onchange="sheet.attacks[${i}].bonus=this.value;autoSave();" style="width:60px;text-align:center;"></td>
       <td data-label="DAMAGE"><input type="text" value="${a.damage}" onchange="sheet.attacks[${i}].damage=this.value;autoSave();" style="width:70px;text-align:center;"></td>
       <td data-label="TYPE"><input type="text" value="${a.type}" onchange="sheet.attacks[${i}].type=this.value;autoSave();" style="width:80px;"></td>
       <td data-label="MASTERY" style="text-align:center;">${badge}${customMasterySelect}</td>
-      <td data-label="NOTES"><input type="text" value="${(a.notes||'').replace(/"/g,'&quot;')}" onchange="sheet.attacks[${i}].notes=this.value;autoSave();"></td>
+      <td data-label="NOTES"><input type="text" value="${esc(a.notes)}" onchange="sheet.attacks[${i}].notes=this.value;autoSave();"></td>
       <td><button class="del-btn" onclick="removeAttack(${i})">×</button></td>
     </tr>`;
   }).join('');
@@ -3412,6 +3412,11 @@ function saveSpell(){
   document.getElementById('spell-conc-inp').checked=false;
 }
 
+// ─── HTML SANITIZATION HELPER ─────────────────────────────────────────────────
+// Escapes characters that would break HTML attributes or content.
+// Applied to all user-supplied strings inserted into innerHTML.
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
 // ─── INVENTORY ────────────────────────────────────────────────────────────────
 function addInventoryItem(){
   sheet.inventory.push({
@@ -3434,7 +3439,7 @@ function renderInventory(){
   body.innerHTML = sheet.inventory.map((item, i) => {
     return `<tr>
       <td>
-        <input type="text" value="${item.name.replace(/"/g,'&quot;')}" onchange="sheet.inventory[${i}].name=this.value;autoSave();" placeholder="Item name" style="min-width:100px;">
+        <input type="text" value="${esc(item.name)}" onchange="sheet.inventory[${i}].name=this.value;autoSave();" placeholder="Item name" style="min-width:100px;">
         <div style="margin-top:3px;">
           <select style="font-size:11px;padding:1px 3px;border:1px solid var(--border-light);background:transparent;color:var(--ink-muted);cursor:pointer;" onchange="setItemType(${i},this.value)">
             <option value="general"    ${item.itemType==='general'   ?'selected':''}>General</option>
@@ -3453,7 +3458,7 @@ function renderInventory(){
         </div>
       </td>
       <td><input type="number" value="${item.weight}" onchange="sheet.inventory[${i}].weight=parseFloat(this.value)||0;updateTotalWeight();autoSave();" style="width:54px;text-align:center;" step="0.5" min="0"></td>
-      <td><input type="text" value="${(item.notes||'').replace(/"/g,'&quot;')}" onchange="sheet.inventory[${i}].notes=this.value;autoSave();" placeholder="Notes…"></td>
+      <td><input type="text" value="${esc(item.notes)}" onchange="sheet.inventory[${i}].notes=this.value;autoSave();" placeholder="Notes…"></td>
       <td><button class="del-btn" onclick="removeItem(${i})">×</button></td>
     </tr>`;
   }).join('');
@@ -3766,10 +3771,10 @@ function renderEncounter(){
         <div class="enc-init-wrap">
           <span class="enc-init-label">INIT</span>
           <input class="enc-init" type="number" value="${c.init}"
-            onchange="updateEncField(${i},'init',this.value);sortEncByInit()" title="Initiative roll">
+            onchange="updateEncField(${i},'init',this.value)" title="Initiative roll">
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
-          <input class="enc-name" type="text" value="${c.name.replace(/"/g,'&quot;')}"
+          <input class="enc-name" type="text" value="${esc(c.name)}"
             placeholder="Combatant name" onchange="updateEncField(${i},'name',this.value)">
           ${isActive ? '<span class="enc-turn-badge">TURN</span>' : ''}
         </div>
@@ -3783,7 +3788,7 @@ function renderEncounter(){
         <span class="enc-hp-sep">/</span>
         <input class="enc-hp-max" type="number" value="${c.hpMax}"
           onchange="updateEncField(${i},'hpMax',this.value);renderEncounter()">
-        <input class="enc-cond" type="text" value="${(c.conditions||'').replace(/"/g,'&quot;')}"
+        <input class="enc-cond" type="text" value="${esc(c.conditions)}"
           placeholder="Conditions (Poisoned, Stunned…)" onchange="updateEncField(${i},'conditions',this.value)">
       </div>
     </div>`;
@@ -3998,6 +4003,8 @@ function handleGiftImport(e){
   const r = new FileReader();
   r.onload = ev=>{
     try{
+      // Flush any pending DOM changes into sheet before we read currency
+      gatherSheet();
       const gift = JSON.parse(ev.target.result);
       if(gift.type!=='dnd5e_gift'){ toast('Not a valid gift file'); return; }
       // Apply gifted items with clean schema
@@ -4025,10 +4032,13 @@ function handleGiftImport(e){
           }
         });
       }
-      // Currency
-      const cur = getSheetCurrency();
+      // Currency — read from in-memory sheet.currency (guaranteed current after gatherSheet())
+      // null guard handles hand-edited or older gift files missing these keys
+      const giveCur = gift.giveCurrency || {};
+      const takeCur = gift.takeCurrency || {};
+      const cur = Object.assign({pp:0,gp:0,ep:0,sp:0,cp:0}, sheet.currency);
       ['pp','gp','ep','sp','cp'].forEach(k=>{
-        cur[k] = Math.max(0, (cur[k]||0) + (gift.giveCurrency[k]||0) - (gift.takeCurrency[k]||0));
+        cur[k] = Math.max(0, (cur[k]||0) + (giveCur[k]||0) - (takeCur[k]||0));
       });
       sheet.currency = cur;
       ['pp','gp','ep','sp','cp'].forEach(k=>{ document.getElementById('cur-'+k).value = cur[k]; });
@@ -4048,6 +4058,7 @@ function handleGiftImport(e){
 }
 
 function applyRest(){
+  gatherSheet(); // flush DOM → sheet before reading hpMax or slotMax
   const type = document.getElementById('rest-type').value;
   if(type==='Long Rest'){
     sheet.hpCur = sheet.hpMax;
@@ -4083,6 +4094,15 @@ function exportAllSheets(){
   toast('📤 Party data exported');
 }
 
+// ─── CROSS-TAB COLLISION DETECTION ───────────────────────────────────────────
+// If another tab saves to the same localStorage key, warn the user immediately.
+// This does not prevent the data race but makes it visible before data is lost.
+window.addEventListener('storage', e => {
+  if(e.key === STORAGE_SHEET){
+    toast('⚠️ Another tab is open with this sheet — changes from both tabs may conflict. Close the other tab to avoid data loss.', 7000);
+  }
+});
+
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 function init(){
   loadSettings();
@@ -4095,7 +4115,6 @@ function init(){
   updatePassives();
   renderConditions();
   renderAttacks();
-  renderSpellSlots();
   renderSpellsByLevel();
   renderInventory();
   renderFeatures();
@@ -4106,10 +4125,26 @@ function init(){
     const saved = localStorage.getItem(STORAGE_SHEET);
     if(saved) applySheet(JSON.parse(saved));
   } catch(e){}
+  // renderSpellSlots runs AFTER applySheet so the saved class/subclass is known
+  // before slot counts are initialized — prevents half-casters showing full-caster slots
+  renderSpellSlots();
 }
 
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
+    // If HP or THP contentEditable edit is open, cancel it and stop — do not also close modals
+    const hpEdit = document.getElementById('hp-cur-display');
+    if(hpEdit && hpEdit.contentEditable === 'true'){
+      hpEdit.textContent = sheet.hpCur;
+      hpEdit.blur();
+      return;
+    }
+    const thpEdit = document.getElementById('thp-display');
+    if(thpEdit && thpEdit.contentEditable === 'true'){
+      thpEdit.textContent = sheet.hpTemp;
+      thpEdit.blur();
+      return;
+    }
     document.querySelectorAll('.modal-overlay').forEach(m=>m.classList.remove('open'));
     closeSettings();
   }
