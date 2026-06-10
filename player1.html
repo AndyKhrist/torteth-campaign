@@ -2147,6 +2147,28 @@
     background: var(--sh-surface);
     border-color: var(--border);
   }
+  .ritual-badge {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    border-radius: 4px;
+    padding: 1px 5px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .roll-chip {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 1px;
+    border-radius: 4px;
+    padding: 1px 5px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .roll-chip-atk { color: var(--gold); border: 1px solid var(--gold); }
+  .roll-chip-save { color: var(--ink-muted); border: 1px solid var(--border-light); }
 </style>
 </head>
 <body>
@@ -2352,7 +2374,7 @@
               <textarea id="prof-tools" placeholder="Thieves' tools, musical instrument…" style="min-height:60px;"></textarea>
             </div>
             <div class="field-group">
-              <label>Languages</label>
+              <label>Languages <span style="font-size:11px;color:var(--ink-muted);font-weight:400;letter-spacing:0;">· synced with Core tab</span></label>
               <textarea id="prof-languages" placeholder="Common, Elvish, Dwarvish…" style="min-height:60px;" oninput="sheet.profLanguages=this.value;const cl=document.getElementById('core-languages');if(cl)cl.value=this.value;autoSave();"></textarea>
             </div>
           </div>
@@ -2440,10 +2462,11 @@
         <!-- Prepared Spells in Combat (conditional for casters) -->
         <div class="section" id="combat-spells-section" style="display:none;">
           <div class="section-title">Prepared Spells</div>
-          <div style="display:flex;gap:16px;align-items:center;margin-bottom:10px;font-size:13px;flex-wrap:wrap;">
+          <div style="display:flex;gap:16px;align-items:center;margin-bottom:6px;font-size:13px;flex-wrap:wrap;">
             <span>DC <strong class="auto-calc" id="combat-spell-dc">—</strong></span>
             <span>Atk <strong class="auto-calc" id="combat-spell-atk">—</strong></span>
           </div>
+          <div id="combat-spell-guidance" style="font-size:12px;color:var(--ink-muted);margin-bottom:10px;line-height:1.4;"></div>
           <!-- Spell slot pips (combat copy — same state as Spells tab) -->
           <div id="combat-slot-grid" style="margin-bottom:12px;"></div>
           <!-- Prepared spell list -->
@@ -2624,11 +2647,13 @@
           <div class="slot-grid" id="slot-grid"></div>
         </div>
 
+        <!-- Wizard spellbook banner (conditional) -->
+        <div id="wizard-spellbook-banner"></div>
         <!-- Spells by level -->
         <div id="spells-by-level"></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="add-btn" onclick="openCompendium()" style="background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:600;">Browse Compendium</button>
-          <button class="add-btn" onclick="openAddSpell()">+ Add Spell</button>
+          <button id="spell-comp-btn" class="add-btn" onclick="openCompendium()" style="background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:600;">Browse Compendium</button>
+          <button id="spell-add-btn" class="add-btn" onclick="openAddSpell()">+ Add Spell</button>
         </div>
       </div>
 
@@ -3236,6 +3261,26 @@ const SKILLS = [
   {name:'Performance',attr:'CHA'},{name:'Persuasion',attr:'CHA'},{name:'Religion',attr:'INT'},
   {name:'Sleight of Hand',attr:'DEX'},{name:'Stealth',attr:'DEX'},{name:'Survival',attr:'WIS'}
 ];
+const SKILL_DESC = {
+  'Acrobatics':     'Balance, tumble, flip, or wriggle free from a grapple. Used when agility and body control matter more than raw strength.',
+  'Animal Handling':'Calm a spooked animal, control a mount, or read an animal\'s intentions. Also used to train or command a beast companion.',
+  'Arcana':         'Recall knowledge about spells, magic items, arcane symbols, the planes, or magical traditions. The go-to for anything magic-related.',
+  'Athletics':      'Climb, swim, jump, or grapple — any feat of raw physical strength. Also used to resist being shoved or knocked down.',
+  'Deception':      'Lie convincingly, fast-talk someone, disguise your motives, or bluff. Opposed by the target\'s Insight.',
+  'History':        'Recall historical events, legendary people, ancient kingdoms, past wars, or lost lore. Useful for understanding context and clues.',
+  'Insight':        'Read someone\'s emotions or true intentions — sense if they\'re lying, scared, or hiding something. Opposed by Deception.',
+  'Intimidation':   'Threaten, coerce, or frighten someone into cooperation using aggression, a menacing tone, or implied violence.',
+  'Investigation':  'Search for clues, deduce hidden meaning from evidence, or examine something carefully. Different from Perception — it\'s about reasoning, not noticing.',
+  'Medicine':       'Stabilize a dying creature, diagnose illness, or recall basic medical knowledge. Used to prevent death saves from ticking down.',
+  'Nature':         'Recall knowledge of terrain, plants, animals, weather, or the natural world. Druid and ranger territory.',
+  'Perception':     'Notice things with your senses — spot a hidden enemy, hear footsteps around a corner, smell smoke. The most common check in the game.',
+  'Performance':    'Entertain through music, acting, dance, or storytelling. Used to impress crowds or maintain a disguise through roleplay.',
+  'Persuasion':     'Influence someone through honest appeal, charm, logic, or good-faith argument. The "polite" alternative to Intimidation or Deception.',
+  'Religion':       'Recall knowledge of gods, holy rites, divine symbols, undead, or the outer planes. Key for clerics, paladins, and anyone dealing with cults.',
+  'Sleight of Hand':'Pickpocket, plant an object on someone, palm an item, or perform a hand trick. Requires a contested Perception or Investigation check.',
+  'Stealth':        'Move silently or stay unseen — hide from enemies, sneak past guards, or shadow a target. Contested by passive Perception.',
+  'Survival':       'Track creatures, navigate the wilderness, find food or fresh water, predict weather, and avoid natural hazards.',
+};
 const XP_THRESHOLDS = [0,300,900,2700,6500,14000,23000,34000,48000,64000,85000,100000,120000,140000,165000,195000,225000,265000,305000,355000];
 const PROF_BY_LEVEL = [0,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6];
 
@@ -3424,7 +3469,7 @@ function onSpellClassChange(n){
   sheet[`spellClass${n}`]=cls; sheet[`spellAbility${n}`]=document.getElementById(`sc-ability${n}`).value; sheet[`spellSub${n}`]='';
   document.getElementById(`sc-features${n}`).classList.remove('visible');
   document.getElementById(`sc-features${n}`).innerHTML='';
-  recalcSlots(); updateSpellStats(); autoSave();
+  recalcSlots(); updateSpellStats(); renderWizardSpellbookBanner(); autoSave();
 }
 function onSubclassChange(n){
   const sub=document.getElementById(`sc-sub${n}`).value;
@@ -3784,7 +3829,7 @@ let sheet = {
   spellClass2:'', spellLevel2:1, spellSub2:'', spellAbility2:'INT',
   multiclassVisible:false,
   pactSlots:null,
-  spells:[], slotMax:[], slotUsed:[],
+  spells:[], slotMax:[], slotUsed:[], arcaneRecoveryUsed:false,
   // Inventory (v1.1 schema)
   inventory:[],
   currency:{pp:0,gp:0,ep:0,sp:0,cp:0},
@@ -3859,6 +3904,7 @@ function switchMode(mode, el){
 }
 function switchSheetTab(tab, el){
   hideCondTooltip();
+  hideSkillTooltip();
   document.querySelectorAll('.sheet-tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.sheet-page').forEach(p=>p.classList.remove('active'));
   if(el) el.classList.add('active');
@@ -3957,7 +4003,10 @@ function renderSkills(){
     const e=sheet.skillExpertise[sk.name];
     html+=`<div class="check-row">
       <div class="prof-dot ${e?'expert':p?'proficient':''}" onclick="cycleSkillProf('${sk.name}')" title="${e?'Expert':p?'Proficient':'Not proficient'} (click to cycle)"></div>
-      <span class="check-label">${sk.name}</span>
+      <span class="check-label" style="cursor:pointer;"
+        onmouseenter="showSkillTooltip(event,'${sk.name}')"
+        onmouseleave="hideSkillTooltip()"
+        ontouchstart="showSkillTooltip(event,'${sk.name}')">${sk.name}</span>
       <span class="check-attr" style="min-width:30px;">${sk.attr}</span>
       <span class="check-mod auto-calc">${fmod(getSkillMod(sk))}</span>
     </div>`;
@@ -4036,6 +4085,7 @@ function updateSpeedDisplay(){
   }
 }
 let _condTooltipEl = null;
+let _skillTooltipEl = null;
 
 function showCondTooltip(e, condName){
   if(!sheet.conditions[condName]) return; // only show on active conditions
@@ -4055,6 +4105,28 @@ function showCondTooltip(e, condName){
 
 function hideCondTooltip(){
   if(_condTooltipEl){ _condTooltipEl.remove(); _condTooltipEl = null; }
+}
+function showSkillTooltip(e, name){
+  hideSkillTooltip();
+  hideCondTooltip();
+  const desc = SKILL_DESC[name];
+  if(!desc) return;
+  const tip = document.createElement('div');
+  tip.className = 'cond-tooltip';
+  tip.innerHTML = `<span class="cond-tooltip-name" style="color:var(--gold);">${name.toUpperCase()}</span>${desc}`;
+  document.body.appendChild(tip);
+  _skillTooltipEl = tip;
+  const rect = e.currentTarget.getBoundingClientRect();
+  const tipW = 260;
+  const tipH = 100;
+  const top = rect.top - tipH - 8 > 0 ? rect.top - tipH - 8 : rect.bottom + 8;
+  tip.style.left = Math.min(Math.max(rect.left, 8), window.innerWidth - tipW - 8) + 'px';
+  tip.style.top  = top + 'px';
+  tip.style.maxWidth = tipW + 'px';
+  e.stopPropagation();
+}
+function hideSkillTooltip(){
+  if(_skillTooltipEl){ _skillTooltipEl.remove(); _skillTooltipEl = null; }
 }
 
 function showModStripTooltip(e, type, condNames){
@@ -4431,7 +4503,11 @@ document.addEventListener('click', function(e){
   }
   const switcher = document.getElementById('dm-table-switcher');
   if(switcher && !switcher.contains(e.target)) closeTableDropdown();
+  if(_skillTooltipEl && !_skillTooltipEl.contains(e.target)) hideSkillTooltip();
 });
+document.addEventListener('touchstart', function(e){
+  if(_skillTooltipEl && !_skillTooltipEl.contains(e.target)) hideSkillTooltip();
+}, {passive:true});
 function openSettings(){
   applySettingsToUI();
   document.getElementById('settings-panel').classList.add('open');
@@ -4479,6 +4555,59 @@ function updateSpellStats(){
   const atk = profBonus() + m;
   document.getElementById('spell-dc').textContent = dc;
   document.getElementById('spell-atk').textContent = fmod(atk);
+}
+function _isWizard(){
+  return sheet.spellClass1 === 'Wizard' || sheet.spellClass2 === 'Wizard';
+}
+function _spellRollType(sp){
+  const desc = (sp.description || sp.desc || '').toLowerCase();
+  if(desc.includes('spell attack')) return {type:'attack'};
+  const m = desc.match(/\b(str|dex|con|int|wis|cha)\b.{0,6}(saving throw|save)\b/i);
+  if(m) return {type:'save', save: m[1].toUpperCase()};
+  return {type:'none'};
+}
+function renderWizardSpellbookBanner(){
+  const banner = document.getElementById('wizard-spellbook-banner');
+  const compBtn = document.getElementById('spell-comp-btn');
+  const addBtn  = document.getElementById('spell-add-btn');
+  if(!banner) return;
+  if(!_isWizard()){
+    banner.innerHTML = '';
+    if(compBtn) compBtn.textContent = 'Browse Compendium';
+    if(addBtn)  addBtn.textContent  = '+ Add Spell';
+    return;
+  }
+  if(compBtn) compBtn.textContent = 'Browse & Add to Spellbook';
+  if(addBtn)  addBtn.textContent  = '+ Add to Spellbook';
+  const wizLvl  = parseInt((document.getElementById('sc-level1')||{}).value||sheet.spellLevel1||1);
+  const intMod  = mod(sheet.stats.INT || 10);
+  const canPrep = Math.max(1, intMod + wizLvl);
+  const prepCount = (sheet.spells||[]).filter(sp=>sp.prepared && sp.level>0).length;
+  const arcMax  = Math.ceil(wizLvl / 2);
+  const arcUsed = !!sheet.arcaneRecoveryUsed;
+  banner.innerHTML = `
+    <div class="section">
+      <div class="section-title">Spellbook</div>
+      <div style="display:flex;gap:16px;align-items:center;font-size:13px;margin-bottom:12px;flex-wrap:wrap;">
+        <span>Can prepare today: <strong class="auto-calc" style="font-size:15px;">${canPrep}</strong></span>
+        <span style="color:var(--ink-muted);">Currently prepared: <span id="wizard-prepared-count">${prepCount}</span></span>
+      </div>
+      <div style="border-top:1px solid var(--border-light);padding-top:10px;">
+        <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;color:var(--ink-muted);margin-bottom:6px;">ARCANE RECOVERY</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+          <div style="font-size:12px;color:var(--ink-muted);line-height:1.4;">After a short rest, recover spell slots totaling ≤ <strong class="auto-calc">${arcMax}</strong> (slots below 6th, once per day).</div>
+          <button onclick="toggleArcaneRecovery()" class="shield-toggle${arcUsed?' active':''}" style="flex-shrink:0;${arcUsed?'opacity:0.5;cursor:default;':''}" ${arcUsed?'disabled':''}>
+            ${arcUsed ? 'Used ✓' : 'Use'}
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+function toggleArcaneRecovery(){
+  if(sheet.arcaneRecoveryUsed) return;
+  sheet.arcaneRecoveryUsed = true;
+  autoSave();
+  renderWizardSpellbookBanner();
 }
 function renderSpellSlots(){
   const lvl = sheet.level;
@@ -4536,6 +4665,7 @@ function toggleSlot(i,j){
 let _editingSpellIdx = null; // null = adding new, number = editing existing
 
 function renderSpellsByLevel(){
+  renderWizardSpellbookBanner();
   const container = document.getElementById('spells-by-level');
   const byLevel = {};
   sheet.spells.forEach(sp=>{
@@ -4550,12 +4680,14 @@ function renderSpellsByLevel(){
     byLevel[lvl].forEach(sp=>{
       const realIdx = sheet.spells.indexOf(sp);
       const isBonusAction = sp.castTime && sp.castTime.toLowerCase().includes('bonus action');
+      const isRitual = !!(sp.ritual || (sp.castTime && sp.castTime.toLowerCase().includes('ritual')));
       html+=`<div class="spell-row">
         <div class="spell-prepared ${sp.prepared?'prepared':''}" onclick="togglePrepared(${realIdx})" title="Toggle prepared"></div>
         <div style="flex:1;min-width:0;cursor:pointer;" onclick="editSpell(${realIdx})">
           <span class="spell-name">${esc(sp.name)}</span>
           ${sp.concentration?'<span class="spell-concentration" style="margin-left:6px;">C</span>':''}
           ${isBonusAction?'<span class="spell-bonus-badge">B</span>':''}
+          ${isRitual?'<span class="ritual-badge" style="margin-left:6px;">RITUAL</span>':''}
           <div class="spell-school">${[sp.school,sp.castTime,sp.range].filter(Boolean).map(s=>esc(s)).join(' · ')}</div>
         </div>
         <div style="font-size:12px;color:var(--ink-muted);">${esc(sp.components||'')}</div>
@@ -5914,6 +6046,7 @@ function applyRest(){
     sheet.hpTemp = 0;
     sheet.hitDiceUsed = Math.max(0, sheet.hitDiceUsed - Math.floor(sheet.hitDieTotal/2));
     sheet.slotUsed = new Array(9).fill(0);
+    sheet.arcaneRecoveryUsed = false;
     sheet.deathSuccesses=[false,false,false];
     sheet.deathFailures=[false,false,false];
     document.getElementById('hp-cur-display').textContent = sheet.hpCur;
@@ -5921,6 +6054,7 @@ function applyRest(){
     for(let i=0;i<9;i++) renderSpellSlotPips(i);
     renderHitDice();
     renderDeathSaves();
+    renderWizardSpellbookBanner();
     autoSave();
     toast('🌙 Long rest complete! HP, slots, hit dice restored.');
   } else {
@@ -6180,20 +6314,18 @@ function renderModStrip(){
 
   strip.innerHTML = STATS.map(s => {
     let dot = '';
-    let tooltipAttrs = '';
+    let hoverAttrs = '';
     if(fx.checkDisadv){
       dot = '<span class="mod-strip-dot disadv" aria-hidden="true"></span>';
-      tooltipAttrs = `onmouseenter="showModStripTooltip(event,'disadv',${JSON.stringify(disadvConds)})"
-                      ontouchstart="showModStripTooltip(event,'disadv',${JSON.stringify(disadvConds)})"
-                      onmouseleave="hideCondTooltip()" ontouchend="hideCondTooltip()"`;
+      hoverAttrs = `onmouseenter="showModStripTooltip(event,'disadv',${JSON.stringify(disadvConds)})"
+                    onmouseleave="hideCondTooltip()"`;
     } else if(fx.checkAdv){
       dot = '<span class="mod-strip-dot adv" aria-hidden="true"></span>';
-      tooltipAttrs = `onmouseenter="showModStripTooltip(event,'adv',${JSON.stringify(advConds)})"
-                      ontouchstart="showModStripTooltip(event,'adv',${JSON.stringify(advConds)})"
-                      onmouseleave="hideCondTooltip()" ontouchend="hideCondTooltip()"`;
+      hoverAttrs = `onmouseenter="showModStripTooltip(event,'adv',${JSON.stringify(advConds)})"
+                    onmouseleave="hideCondTooltip()"`;
     }
     return `
-      <div class="mod-strip-box${hasDot ? ' cond-affected' : ''}" ${tooltipAttrs} style="${hasDot ? 'cursor:pointer' : ''}">
+      <div class="mod-strip-box${hasDot ? ' cond-affected' : ''}" ${hoverAttrs} onclick="openStatModal('${s}')" style="cursor:pointer;" title="Tap to edit ${s}">
         ${dot}
         <span class="mod-strip-label">${s}</span>
         <span class="mod-strip-val">${fmod(mod(sheet.stats[s]))}</span>
@@ -6256,18 +6388,35 @@ function renderCombatSpells(){
   updateCombatSpellStats();
   // Render slot pips (compact)
   renderCombatSlotGrid();
+  // Roll guidance line
+  const abilityEl = document.getElementById('sc-ability1');
+  const ability = abilityEl ? abilityEl.value : (sheet.spellAbility1||'INT');
+  const m = mod(sheet.stats[ability]||10);
+  const dcVal  = 8 + profBonus() + m;
+  const atkVal = profBonus() + m;
+  const guidanceEl = document.getElementById('combat-spell-guidance');
+  if(guidanceEl){
+    guidanceEl.textContent = `Attack spell — roll d20 ${atkVal>=0?'+':''}${atkVal}  ·  Save spell — target rolls vs. DC ${dcVal}`;
+  }
   // Render prepared spell list
   const list = document.getElementById('combat-prepared-spells');
   list.innerHTML = prepared.map((sp, localIdx)=>{
     const globalIdx = sheet.spells.indexOf(sp);
     const isExp = _combatSpellExpanded === globalIdx;
     const isBonusAction = sp.castTime && sp.castTime.toLowerCase().includes('bonus action');
+    const rollType = _spellRollType(sp);
+    const rollChip = rollType.type==='attack'
+      ? '<span class="roll-chip roll-chip-atk">ATK ROLL</span>'
+      : rollType.type==='save'
+        ? `<span class="roll-chip roll-chip-save">${rollType.save} SAVE</span>`
+        : '';
     return `<div class="combat-spell-row" onclick="toggleCombatSpellExpand(${globalIdx})">
       <div class="combat-spell-header">
         <span class="combat-spell-name">${esc(sp.name)}</span>
         ${sp.level>0?`<span class="combat-spell-badge badge-action" style="font-size:9px;">Lvl ${sp.level}</span>`:''}
         ${_castTimeBadge(sp.castTime)}
         ${sp.concentration?'<span class="combat-spell-badge badge-conc">C</span>':''}
+        ${rollChip}
       </div>
       <div class="combat-spell-expand ${isExp?'open':''}">
         ${sp.description?`<div>${esc(sp.description)}</div>`:''}
@@ -6764,6 +6913,7 @@ function confirmLongRest(){
   }
   const bardLvl=_detectClassLevel('Bard');
   sheet.bardicInspirationUsed=0; // always reset on long rest (Bard 5+ also recharges on short rest, but long rest covers all)
+  sheet.arcaneRecoveryUsed = false;
   // Refresh DOM
   document.getElementById('hp-cur-display').textContent = sheet.hpCur;
   document.getElementById('hp-max-display').textContent = sheet.hpMax;
@@ -6773,6 +6923,7 @@ function confirmLongRest(){
   updateDeathSavesCollapse();
   renderClassTrackers();
   renderCombatSlotGrid();
+  renderWizardSpellbookBanner();
   autoSave();
   closeModal('rest-modal');
   toast('🌙 Long rest complete.');
@@ -6909,6 +7060,7 @@ if(window._firstOpen){
       <input id="comp-search" type="text" placeholder="Search spells…" oninput="debouncedCompendium()" style="flex:2;min-width:120px;padding:6px 8px;border-radius:6px;border:1px solid var(--border-light);background:var(--sh-input-bg);color:var(--ink);font-size:13px;">
     </div>
 
+    <div id="comp-spell-guidance" style="font-size:12px;color:var(--ink-muted);margin-bottom:6px;display:none;"></div>
     <div id="comp-count" style="font-size:12px;color:var(--ink-muted);margin-bottom:6px;"></div>
 
     <!-- Spell list -->
@@ -7350,6 +7502,25 @@ function renderCompendium(){
   const levelFilter = document.getElementById('comp-level-filter').value;
   const search = (document.getElementById('comp-search').value || '').toLowerCase().trim();
 
+  // Guidance line
+  const guidanceEl = document.getElementById('comp-spell-guidance');
+  if(guidanceEl){
+    const abilityEl = document.getElementById('sc-ability1');
+    const ability = abilityEl ? abilityEl.value : (sheet.spellAbility1||'INT');
+    const m = mod(sheet.stats[ability]||10);
+    const dcVal  = 8 + profBonus() + m;
+    const atkVal = profBonus() + m;
+    if(_isCaster()){
+      guidanceEl.textContent = `Your stats: Spell Attack ${atkVal>=0?'+':''}${atkVal}  ·  Save DC ${dcVal}  —  Attack spells use Atk, save spells use DC`;
+      guidanceEl.style.display = '';
+    } else {
+      guidanceEl.style.display = 'none';
+    }
+  }
+
+  // Wizard label on add button
+  const isWiz = _isWizard();
+
   // Build set of already-added spell names for quick lookup
   const addedNames = new Set((sheet.spells || []).map(s => s.name.toLowerCase()));
 
@@ -7377,11 +7548,22 @@ function renderCompendium(){
 
     const row = document.createElement('div');
     row.className = 'comp-spell-row' + (isExp ? ' expanded' : '');
+    const rollType = _spellRollType(sp);
+    const rollChip = rollType.type==='attack'
+      ? '<span class="roll-chip roll-chip-atk">ATK ROLL</span>'
+      : rollType.type==='save'
+        ? `<span class="roll-chip roll-chip-save">${rollType.save} SAVE</span>`
+        : '';
+    const isRitual = sp.castTime && sp.castTime.toLowerCase().includes('ritual');
+    const ritualChip = isRitual ? '<span class="ritual-badge">RITUAL</span>' : '';
+    const addLabel = isAdded ? '✓ On Sheet' : (isWiz ? '+ Add to Spellbook' : '+ Add to Sheet');
     row.innerHTML = `
       <div class="comp-spell-header" onclick="toggleCompExpand('${sp.name.replace(/'/g,"\\'")}')">
         <span class="comp-spell-name">${sp.name}</span>
         <span class="comp-spell-tag">${levelLabel(sp.level)}</span>
         <span class="comp-spell-tag">${sp.school}</span>
+        ${ritualChip}
+        ${rollChip}
         ${sp.concentration ? '<span class="comp-spell-conc">C</span>' : ''}
       </div>
       ${isExp ? `
@@ -7394,7 +7576,7 @@ function renderCompendium(){
         </div>
         <button class="comp-add-btn ${isAdded ? 'added' : ''}"
           ${isAdded ? 'disabled' : `onclick="addSpellFromCompendium('${sp.name.replace(/'/g,"\\'")}')"`}>
-          ${isAdded ? '✓ On Sheet' : '+ Add to Sheet'}
+          ${addLabel}
         </button>
       ` : ''}
     `;
@@ -7445,7 +7627,7 @@ function addSpellFromCompendium(name){
   autoSave();
   renderSpellsByLevel();
   renderCompendium(); // refresh to show checkmark
-  toast(`${sp.name} added to your spell list`);
+  toast(`${sp.name} added to your ${_isWizard()?'spellbook':'spell list'}`);
 }
 </script>
 <!-- Enemy Stat Block Modal -->
