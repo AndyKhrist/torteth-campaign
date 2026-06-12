@@ -2036,6 +2036,8 @@
   html[data-theme="dark"] .mod-strip-box { background: var(--sh-stat-bg); }
   html[data-theme="dark"] select {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236c7086'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
   }
   html[data-theme="dark"] .tracker-pip { border-color: var(--gold); background: var(--gold); }
   html[data-theme="dark"] .tracker-pip.spent { background: transparent; border-color: var(--border); }
@@ -2168,7 +2170,122 @@
     flex-shrink: 0;
   }
   .roll-chip-atk { color: var(--gold); border: 1px solid var(--gold); }
-  .roll-chip-save { color: var(--ink-muted); border: 1px solid var(--border-light); }
+  .roll-chip-save { color: var(--gold); border: 1px solid var(--gold); }
+
+  /* ── First-run modal ── */
+  .fr-brand {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    opacity: 0.65;
+    margin: 0 0 10px;
+  }
+  .fr-title {
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0 0 28px;
+    padding: 0;
+    border: none;
+  }
+  .fr-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 6px;
+  }
+  .fr-input {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--parchment-dark);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--ink);
+    font-size: 15px;
+    font-family: inherit;
+    box-sizing: border-box;
+  }
+  .fr-input:focus {
+    outline: none;
+    border-color: var(--gold);
+  }
+  .fr-field {
+    margin-bottom: 16px;
+    text-align: left;
+  }
+  .fr-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+  .fr-row .fr-field {
+    flex: 1;
+    margin-bottom: 16px;
+  }
+  .fr-field-level {
+    flex: 0 0 80px !important;
+  }
+  .fr-field-level .fr-input {
+    width: 80px !important;
+    flex-shrink: 0;
+    text-align: center;
+  }
+  .fr-select {
+    width: 100%;
+    padding: 10px 32px 10px 12px;
+    background: var(--parchment-dark);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--ink);
+    font-size: 15px;
+    font-family: inherit;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231a1209' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    cursor: pointer;
+    box-sizing: border-box;
+  }
+  .fr-select:focus {
+    outline: none;
+    border-color: var(--gold);
+  }
+  html[data-theme="dark"] .fr-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23cdd6f4' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+  }
+  .fr-btn {
+    width: 100%;
+    min-height: 44px;
+    background: var(--gold);
+    color: #1a1209;
+    border: none;
+    border-radius: 6px;
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: opacity 0.15s;
+    touch-action: manipulation;
+  }
+  .fr-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+  .fr-btn:not(:disabled):active {
+    opacity: 0.85;
+  }
 </style>
 </head>
 <body>
@@ -2176,7 +2293,7 @@
 <!-- TOP BAR -->
 <div id="topbar">
   <a href="index.html" style="padding:0 12px;height:44px;display:flex;align-items:center;font-family:'Cinzel',serif;font-size:11px;color:#a08060;text-decoration:none;border-right:1px solid #3d2e1a;letter-spacing:1px;" title="Back to party">← PARTY</a>
-  <div id="topbar-char-name" style="padding:0 14px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:#c9a227;border-right:1px solid #3d2e1a;line-height:44px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;">CHARACTER</div>
+  <div id="topbar-char-name" style="padding:0 14px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:#c9a227;border-right:1px solid #3d2e1a;line-height:44px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;">PLAYER 1</div>
   <div class="mode-tabs">
     <button class="mode-tab active" onclick="switchMode('player',this)">Player Sheet</button>
     <button class="mode-tab" onclick="switchMode('dm',this)">DM Panel</button>
@@ -2652,7 +2769,7 @@
         <!-- Spells by level -->
         <div id="spells-by-level"></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button id="spell-comp-btn" class="add-btn" onclick="openCompendium()" style="background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:600;">Browse Compendium</button>
+          <button id="spell-comp-btn" class="add-btn" onclick="openCompendium()" style="background:var(--gold);border-color:var(--gold);color:#1a1209;font-weight:600;">Browse Compendium</button>
           <button id="spell-add-btn" class="add-btn" onclick="openAddSpell()">+ Add Spell</button>
         </div>
       </div>
@@ -3160,13 +3277,57 @@
 <!-- Toast -->
 <div id="toast"></div>
 
+<!-- First-run overlay — must appear before the <script> so init() can find and remove it -->
+<div class="modal-overlay open" id="firstRunOverlay" style="z-index:200;background:rgba(0,0,0,0.88);">
+  <div class="modal" id="firstRunModal" style="max-width:380px;padding:32px 24px 28px;text-align:center;">
+
+    <p class="fr-brand">· TAVERN ·</p>
+    <h2 class="fr-title">Set up your character</h2>
+
+    <div class="fr-field" style="text-align:left;">
+      <label class="fr-label" for="frName">Character name</label>
+      <input type="text" id="frName" class="fr-input" placeholder="Your character's name" autocomplete="off">
+    </div>
+
+    <div class="fr-row">
+      <div class="fr-field">
+        <label class="fr-label" for="frClass">Class</label>
+        <select id="frClass" class="fr-select">
+          <option value="" disabled selected>Select your class...</option>
+          <option>Artificer</option>
+          <option>Barbarian</option>
+          <option>Bard</option>
+          <option>Cleric</option>
+          <option>Druid</option>
+          <option>Fighter</option>
+          <option>Monk</option>
+          <option>Paladin</option>
+          <option>Ranger</option>
+          <option>Rogue</option>
+          <option>Sorcerer</option>
+          <option>Warlock</option>
+          <option>Wizard</option>
+        </select>
+      </div>
+      <div class="fr-field fr-field-level">
+        <label class="fr-label" for="frLevel">Level</label>
+        <input type="number" id="frLevel" class="fr-input" value="1" min="1" max="20">
+      </div>
+    </div>
+
+    <button id="frBtn" class="fr-btn">Start Playing</button>
+    <p id="frError" style="color:var(--red);font-size:13px;margin-top:10px;min-height:18px;"></p>
+
+  </div>
+</div>
+
 <script>
 // ─── UNIQUE INSTANCE KEY SYSTEM ───────────────────────────────────────────────
 // Each downloaded copy of this file gets a unique ID on first open.
 // All localStorage keys are built from this ID so two copies of the file
 // on the same device never share or overwrite each other's data.
 (function(){
-  const BOOTSTRAP_KEY = 'dnd5e_instance_id';
+  const BOOTSTRAP_KEY = 'dnd5e_instance_id_p1';
   let id = localStorage.getItem(BOOTSTRAP_KEY);
   const isFirstOpen = !id;
   if(!id){
@@ -3920,7 +4081,7 @@ function updateHeader(){
   sheet.race = document.getElementById('char-race').value;
   const displayName = sheet.name || 'New Character';
   document.getElementById('display-name').textContent = displayName;
-  document.getElementById('topbar-char-name').textContent = (sheet.name || 'CHARACTER').toUpperCase();
+  document.getElementById('topbar-char-name').textContent = (sheet.name || 'PLAYER 1').toUpperCase();
   const parts = [sheet.charClass, sheet.race].filter(Boolean);
   document.getElementById('display-subtitle').textContent = parts.join(' · ') || 'Choose your destiny…';
   updateSneakAttackWidget();
@@ -6938,6 +7099,31 @@ window.addEventListener('storage', e => {
   }
 });
 
+// ─── FIRST-RUN MODAL ──────────────────────────────────────────────────────────
+function confirmFirstRun(e){
+  if(e && e.cancelable) e.preventDefault();
+  try {
+    const errEl = document.getElementById('frError');
+    const name  = document.getElementById('frName').value.trim();
+    const cls   = document.getElementById('frClass').value;
+    const level = Math.min(Math.max(parseInt(document.getElementById('frLevel').value) || 1, 1), 20);
+
+    if(!name){ if(errEl) errEl.textContent = 'Enter your character name.'; return; }
+    if(!cls){  if(errEl) errEl.textContent = 'Pick a class.'; return; }
+    if(errEl) errEl.textContent = '';
+
+    document.getElementById('char-name').value  = name;
+    document.getElementById('char-class').value = cls + ' ' + level;
+
+    updateHeader();
+    renderSpellSlots();
+
+    document.getElementById('firstRunOverlay').remove();
+  } catch(err) {
+    alert('Setup error — please screenshot this and send to support: ' + err.message);
+  }
+}
+
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 function init(){
   loadSettings();
@@ -6962,6 +7148,14 @@ function init(){
     const saved = localStorage.getItem(STORAGE_SHEET);
     if(saved) applySheet(JSON.parse(saved));
   } catch(e){}
+  // First-run check: remove overlay if player has existing data, otherwise focus name field
+  if(sheet.name && sheet.name.trim() !== ''){
+    const overlay = document.getElementById('firstRunOverlay');
+    if(overlay) overlay.remove();
+  } else {
+    const frName = document.getElementById('frName');
+    if(frName) frName.focus();
+  }
   // renderSpellSlots runs AFTER applySheet so the saved class/subclass is known
   // before slot counts are initialized — prevents half-casters showing full-caster slots
   renderSpellSlots();
@@ -6971,6 +7165,11 @@ function init(){
   updateDeathSavesCollapse();
   renderConditions();
   updateSpeedDisplay();
+  const frBtn = document.getElementById('frBtn');
+  if(frBtn){
+    frBtn.addEventListener('touchend', function(e){ if(e && e.cancelable) e.preventDefault(); confirmFirstRun(); }, {passive:false});
+    frBtn.addEventListener('click', confirmFirstRun);
+  }
 }
 
 document.addEventListener('keydown',e=>{
@@ -6988,7 +7187,10 @@ document.addEventListener('keydown',e=>{
       thpEdit.blur();
       return;
     }
-    document.querySelectorAll('.modal-overlay').forEach(m=>m.classList.remove('open'));
+    document.querySelectorAll('.modal-overlay').forEach(m=>{
+      if(m.id === 'firstRunOverlay') return;
+      m.classList.remove('open');
+    });
     closeSettings();
   }
 });
@@ -7716,6 +7918,8 @@ function addSpellFromCompendium(name){
     </div>
   </div>
 </div>
+
+<!-- First-run setup modal -->
 
 </body>
 </html>
