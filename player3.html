@@ -2286,6 +2286,267 @@
   .fr-btn:not(:disabled):active {
     opacity: 0.85;
   }
+
+  /* ─── FEATS SECTION (Features tab) ────────────────────────────────────────── */
+  .feats-section { margin-bottom: 20px; }
+  .feats-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .feats-section-label {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .browse-feats-btn {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+  .browse-feats-btn:hover { background: rgba(var(--gold-rgb), 0.1); }
+  .feats-empty {
+    font-size: 13px;
+    color: var(--ink-muted);
+    font-style: italic;
+    padding: 8px 0;
+  }
+
+  /* ─── FEAT ENTRY (added feats on sheet) ───────────────────────────────────── */
+  .feat-entry {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .feat-entry-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    cursor: pointer;
+    min-height: 44px;
+    background: var(--parchment-dark);
+    touch-action: manipulation;
+  }
+  .feat-entry-header:hover { background: rgba(var(--gold-rgb), 0.08); }
+  .feat-entry-name {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    color: var(--ink);
+  }
+  .feat-entry-actions { display: flex; align-items: center; gap: 8px; }
+  .feat-entry-chevron {
+    font-size: 12px;
+    color: var(--ink-muted);
+    transition: transform 0.15s;
+  }
+  .feat-entry.open .feat-entry-chevron { transform: rotate(180deg); }
+  .feat-entry-remove {
+    background: transparent;
+    border: none;
+    color: var(--ink-muted);
+    font-size: 12px;
+    cursor: pointer;
+    padding: 4px;
+    line-height: 1;
+    min-width: 24px;
+    min-height: 24px;
+    touch-action: manipulation;
+  }
+  .feat-entry-remove:hover { color: var(--red); }
+  .feat-entry-body {
+    display: none;
+    padding: 10px 12px 12px;
+    border-top: 1px solid var(--border);
+    background: var(--parchment);
+  }
+  .feat-entry.open .feat-entry-body { display: block; }
+  .feat-entry-desc { font-size: 13px; line-height: 1.55; color: var(--ink-muted); margin: 0; }
+
+  /* ─── BACKGROUND CARD ──────────────────────────────────────────────────────── */
+  .background-card {
+    background: var(--sh-input-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-top: 6px;
+  }
+  .background-card-name {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .background-card-desc {
+    font-size: 13px;
+    color: var(--ink-muted);
+    line-height: 1.55;
+    margin: 0 0 10px;
+  }
+  .background-card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .bg-meta-row {
+    font-size: 12px;
+    color: var(--ink-muted);
+  }
+  .bg-meta-row strong { color: var(--ink); }
+
+  /* ─── FEAT COMPENDIUM MODAL ────────────────────────────────────────────────── */
+  .feat-comp-modal {
+    max-width: 560px;
+    width: 95vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+  }
+  .feat-comp-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 20px 20px 12px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .feat-comp-brand {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    opacity: 0.7;
+    margin: 0 0 4px;
+  }
+  .feat-comp-title {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    letter-spacing: 1px;
+    color: var(--ink);
+    margin: 0;
+    border: none;
+    padding: 0;
+  }
+  .feat-comp-search-row { padding: 12px 16px 8px; flex-shrink: 0; }
+  .feat-search-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 14px;
+    background: var(--parchment);
+    color: var(--ink);
+  }
+  html[data-theme="dark"] .feat-search-input { background: var(--sh-input-bg); }
+  .feat-filter-row {
+    display: flex;
+    gap: 8px;
+    padding: 0 16px 12px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+  .feat-filter-chip {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--ink-muted);
+    cursor: pointer;
+    min-height: 32px;
+    touch-action: manipulation;
+  }
+  .feat-filter-chip.active {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(var(--gold-rgb), 0.08);
+  }
+  .feat-comp-list { overflow-y: auto; flex: 1; padding: 0 16px 16px; }
+
+  /* ─── FEAT CARD (in modal) ─────────────────────────────────────────────────── */
+  .feat-card {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .feat-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    cursor: pointer;
+    min-height: 52px;
+    background: var(--parchment-dark);
+    touch-action: manipulation;
+  }
+  .feat-card-header:hover { background: rgba(var(--gold-rgb), 0.08); }
+  .feat-card-left { flex: 1; }
+  .feat-card-name {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+  .feat-card-prereq { font-size: 11px; color: var(--ink-muted); }
+  .feat-card-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .feat-card-chevron {
+    font-size: 12px;
+    color: var(--ink-muted);
+    transition: transform 0.15s;
+  }
+  .feat-card.open .feat-card-chevron { transform: rotate(180deg); }
+  .feat-card-body {
+    display: none;
+    padding: 12px 14px 14px;
+    border-top: 1px solid var(--border);
+    background: var(--parchment);
+  }
+  .feat-card.open .feat-card-body { display: block; }
+  .feat-card-desc { font-size: 13px; line-height: 1.6; color: var(--ink-muted); margin: 0 0 12px; }
+  .feat-add-btn {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    background: var(--gold);
+    color: #1a1209;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    min-height: 36px;
+    touch-action: manipulation;
+  }
+  .feat-add-btn:hover { opacity: 0.85; }
+  .feat-add-btn.added {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--ink-muted);
+    cursor: default;
+  }
 </style>
 </head>
 <body>
@@ -2469,9 +2730,33 @@
       <!-- FEATURES TAB -->
       <div id="tab-features" class="sheet-page">
         <div class="section">
-          <div class="section-title">Racial &amp; Class Features</div>
-          <div id="features-list" class="scroll-list"></div>
-          <button class="add-btn" onclick="addFeature()">+ Add Feature</button>
+          <div class="feats-section-header">
+            <span class="feats-section-label">Background</span>
+            <button class="browse-feats-btn" id="bg-browse-btn" onclick="openBackgroundCompendium()">Browse &amp; Select</button>
+          </div>
+          <div id="background-display"><p class="feats-empty">No background selected.</p></div>
+        </div>
+        <div class="section">
+          <div class="feats-section">
+            <div class="feats-section-header">
+              <span class="feats-section-label">Traits</span>
+              <button class="browse-feats-btn" onclick="openTraitCompendium()">Browse &amp; Add Traits</button>
+            </div>
+            <div id="traits-list">
+              <p class="feats-empty">No traits added yet.</p>
+            </div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="feats-section">
+            <div class="feats-section-header">
+              <span class="feats-section-label">Feats</span>
+              <button class="browse-feats-btn" onclick="openFeatCompendium()">Browse &amp; Add Feats</button>
+            </div>
+            <div id="feats-list">
+              <p class="feats-empty">No feats added yet.</p>
+            </div>
+          </div>
         </div>
         <div class="section">
           <div class="section-title">Proficiencies</div>
@@ -3086,22 +3371,6 @@
       <button class="modal-btn modal-btn-danger" id="spell-modal-delete-btn" style="display:none;margin-right:auto;" onclick="deleteSpellFromModal()">Delete</button>
       <button class="modal-btn modal-btn-secondary" onclick="closeModal('spell-modal')">Cancel</button>
       <button class="modal-btn modal-btn-primary" id="spell-modal-save-btn" onclick="saveSpell()">Add Spell</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="feature-modal">
-  <div class="modal">
-    <h2>Add Feature / Trait</h2>
-    <div class="field-row fr2">
-      <div class="field-group"><label>Feature Name</label><input type="text" id="feat-name-inp"></div>
-      <div class="field-group"><label>Source</label><input type="text" id="feat-src-inp" placeholder="Class, Race, Background…"></div>
-    </div>
-    <div class="field-group"><label>Description</label><textarea id="feat-desc-inp" style="min-height:100px;"></textarea></div>
-    <div class="modal-actions">
-      <button class="modal-btn modal-btn-danger" id="feature-modal-delete-btn" style="display:none;margin-right:auto;" onclick="deleteFeatureFromModal()">Delete</button>
-      <button class="modal-btn modal-btn-secondary" onclick="closeModal('feature-modal')">Cancel</button>
-      <button class="modal-btn modal-btn-primary" id="feature-modal-save-btn" onclick="saveFeature()">Add</button>
     </div>
   </div>
 </div>
@@ -5062,68 +5331,349 @@ function getSheetCurrency(){
   };
 }
 
-// ─── FEATURES ─────────────────────────────────────────────────────────────────
-let _editingFeatureIdx = null;
+// ─── BACKGROUND ───────────────────────────────────────────────────────────────
+function openBackgroundCompendium() {
+  const search = document.getElementById('bg-search-input');
+  if (search) search.value = '';
+  openModal('bg-compendium-modal');
+  renderBgList();
+}
 
-function addFeature(){
-  _editingFeatureIdx = null;
-  document.querySelector('#feature-modal h2').textContent = 'Add Feature / Trait';
-  document.getElementById('feature-modal-save-btn').textContent = 'Add';
-  document.getElementById('feature-modal-delete-btn').style.display = 'none';
-  document.getElementById('feat-name-inp').value='';
-  document.getElementById('feat-src-inp').value='';
-  document.getElementById('feat-desc-inp').value='';
-  openModal('feature-modal');
+function renderBgList() {
+  const search = (document.getElementById('bg-search-input').value || '').toLowerCase().trim();
+  const data = (typeof BACKGROUND_DATA !== 'undefined') ? BACKGROUND_DATA : [];
+  const filtered = search ? data.filter(b => b.name.toLowerCase().includes(search)) : data;
+  const listEl = document.getElementById('bg-comp-list');
+  if (!listEl) return;
+  listEl.innerHTML = '';
+  filtered.forEach(b => {
+    const isSelected = sheet.backgroundId === b.id;
+    const card = document.createElement('div');
+    card.className = 'feat-card';
+    const itemsText = (b.startingItems || []).map(i => `${i.qty > 1 ? i.qty + '× ' : ''}${i.name}`).join(', ');
+    const goldText = b.gold ? ` + ${b.gold} GP` : '';
+    card.innerHTML = `
+      <div class="feat-card-header" onclick="toggleFeatCard(this)">
+        <div class="feat-card-left">
+          <div class="feat-card-name">${esc(b.name)}</div>
+          <div class="feat-card-prereq">Origin Feat: ${esc(b.originFeat)} · Skills: ${esc(b.skills.join(', '))}</div>
+        </div>
+        <div class="feat-card-right"><span class="feat-card-chevron">&#9662;</span></div>
+      </div>
+      <div class="feat-card-body">
+        <p class="feat-card-desc">${esc(b.description)}</p>
+        <p class="feat-card-desc" style="margin-top:6px;"><strong>Starting items:</strong> ${esc(itemsText + goldText)}</p>
+        <button class="feat-add-btn${isSelected ? ' added' : ''}"${isSelected ? ' disabled' : ''} onclick="selectBackground('${b.id}')">${isSelected ? 'Selected ✓' : 'Select'}</button>
+      </div>`;
+    listEl.appendChild(card);
+  });
 }
-function editFeature(i){
-  _editingFeatureIdx = i;
-  const f = sheet.features[i];
-  document.querySelector('#feature-modal h2').textContent = 'Edit Feature / Trait';
-  document.getElementById('feature-modal-save-btn').textContent = 'Save Changes';
-  document.getElementById('feature-modal-delete-btn').style.display = 'inline-block';
-  document.getElementById('feat-name-inp').value = f.name || '';
-  document.getElementById('feat-src-inp').value  = f.source || '';
-  document.getElementById('feat-desc-inp').value = f.desc || '';
-  openModal('feature-modal');
-}
-function deleteFeatureFromModal(){
-  if(_editingFeatureIdx === null) return;
-  sheet.features.splice(_editingFeatureIdx, 1);
-  _editingFeatureIdx = null;
-  closeModal('feature-modal');
-  renderFeatures();
-  autoSave();
-}
-function saveFeature(){
-  const data = {
-    name: document.getElementById('feat-name-inp').value||'Unnamed',
-    source: document.getElementById('feat-src-inp').value,
-    desc: document.getElementById('feat-desc-inp').value
-  };
-  if(_editingFeatureIdx !== null){
-    sheet.features[_editingFeatureIdx] = data;
+
+function selectBackground(bgId) {
+  const bg = (BACKGROUND_DATA || []).find(b => b.id === bgId);
+  if (!bg) return;
+  sheet.backgroundId = bgId;
+  sheet.background = bg.name;
+  const coreInput = document.getElementById('char-background');
+  if (coreInput) coreInput.value = bg.name;
+  const hasItems = sheet.inventory && sheet.inventory.length > 0;
+  if (!hasItems) {
+    _addBackgroundItems(bg);
+    renderBackground();
+    closeModal('bg-compendium-modal');
+    autoSave();
   } else {
-    sheet.features.push(data);
+    _pendingBgItems = bg;
+    document.getElementById('bg-items-confirm-name').textContent = bg.name;
+    openModal('bg-items-confirm-modal');
   }
-  _editingFeatureIdx = null;
-  closeModal('feature-modal');
-  renderFeatures();
+}
+
+let _pendingBgItems = null;
+
+function confirmAddBgItems() {
+  if (_pendingBgItems) _addBackgroundItems(_pendingBgItems);
+  _pendingBgItems = null;
+  closeModal('bg-items-confirm-modal');
+  renderBackground();
+  closeModal('bg-compendium-modal');
   autoSave();
 }
-function renderFeatures(){
-  document.getElementById('features-list').innerHTML = sheet.features.map((f,i)=>`
-    <div class="feature-row" style="cursor:pointer;" onclick="editFeature(${i})">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-        <div><span class="feature-name">${esc(f.name)}</span> <span class="feature-src">${f.source?'· '+esc(f.source):''}</span></div>
-        <div style="display:flex;gap:4px;flex-shrink:0;">
-          <button class="del-btn" style="background:transparent;border:1px solid var(--border-light);color:var(--ink-muted);font-size:11px;width:auto;padding:2px 6px;border-radius:3px;cursor:pointer;" onclick="event.stopPropagation();editFeature(${i})" title="Edit">✎</button>
-          <button class="del-btn" onclick="event.stopPropagation();removeFeature(${i})">×</button>
+
+function skipBgItems() {
+  _pendingBgItems = null;
+  closeModal('bg-items-confirm-modal');
+  renderBackground();
+  closeModal('bg-compendium-modal');
+  autoSave();
+}
+
+function _addBackgroundItems(bg) {
+  sheet.inventory = sheet.inventory || [];
+  if (bg.startingItems) {
+    bg.startingItems.forEach(item => {
+      sheet.inventory.push({ name: item.name, qty: item.qty, weight: 0, notes: '', itemType: 'general', condition: '', degradationTier: 0, harvestedAt: '', expiresAt: '' });
+    });
+  }
+  if (bg.gold) {
+    sheet.currency = sheet.currency || {pp:0, gp:0, ep:0, sp:0, cp:0};
+    sheet.currency.gp = (sheet.currency.gp || 0) + bg.gold;
+    const gpEl = document.getElementById('cur-gp');
+    if (gpEl) gpEl.value = sheet.currency.gp;
+    updateCurrencyTotal();
+  }
+  renderInventory();
+}
+
+function renderBackground() {
+  const el = document.getElementById('background-display');
+  if (!el) return;
+  if (!sheet.backgroundId) {
+    el.innerHTML = '<p class="feats-empty">No background selected.</p>';
+    return;
+  }
+  const bg = (BACKGROUND_DATA || []).find(b => b.id === sheet.backgroundId);
+  if (!bg) {
+    el.innerHTML = '<p class="feats-empty">No background selected.</p>';
+    return;
+  }
+  el.innerHTML = `
+    <div class="background-card">
+      <div class="background-card-name">${esc(bg.name)}</div>
+      <p class="background-card-desc">${esc(bg.description)}</p>
+      <div class="background-card-meta">
+        <span class="bg-meta-row"><strong>Origin Feat:</strong> ${esc(bg.originFeat)}</span>
+        <span class="bg-meta-row"><strong>Skills:</strong> ${esc(bg.skills.join(', '))}</span>
+        <span class="bg-meta-row"><strong>Tool:</strong> ${esc(bg.tool)}</span>
+      </div>
+    </div>`;
+}
+
+// ─── TRAITS ───────────────────────────────────────────────────────────────────
+let _traitFilter = 'all';
+
+function openTraitCompendium() {
+  _traitFilter = 'all';
+  document.querySelectorAll('#trait-filter-row .feat-filter-chip').forEach(c => {
+    c.classList.toggle('active', c.dataset.filter === 'all');
+  });
+  const search = document.getElementById('trait-search-input');
+  if (search) search.value = '';
+  openModal('trait-compendium-modal');
+  renderTraitList();
+}
+
+function setTraitFilter(filter) {
+  _traitFilter = filter;
+  document.querySelectorAll('#trait-filter-row .feat-filter-chip').forEach(c => {
+    c.classList.toggle('active', c.dataset.filter === filter);
+  });
+  renderTraitList();
+}
+
+function renderTraitList() {
+  const search = (document.getElementById('trait-search-input').value || '').toLowerCase().trim();
+  const addedIds = new Set(sheet.traits || []);
+  const data = (typeof TRAIT_DATA !== 'undefined') ? TRAIT_DATA : [];
+  const filtered = data.filter(t => {
+    if (_traitFilter !== 'all' && t.species !== _traitFilter) return false;
+    if (search && !t.name.toLowerCase().includes(search)) return false;
+    return true;
+  });
+  const listEl = document.getElementById('trait-comp-list');
+  if (!listEl) return;
+  listEl.innerHTML = '';
+  filtered.forEach(t => {
+    const isAdded = addedIds.has(t.id);
+    const card = document.createElement('div');
+    card.className = 'feat-card';
+    card.innerHTML = `
+      <div class="feat-card-header" onclick="toggleFeatCard(this)">
+        <div class="feat-card-left">
+          <div class="feat-card-name">${esc(t.name)}</div>
+          <div class="feat-card-prereq">${esc(t.species)}</div>
+        </div>
+        <div class="feat-card-right"><span class="feat-card-chevron">&#9662;</span></div>
+      </div>
+      <div class="feat-card-body">
+        <p class="feat-card-desc">${esc(t.description)}</p>
+        <button class="feat-add-btn${isAdded ? ' added' : ''}"${isAdded ? ' disabled' : ''} onclick="addTrait('${t.id}')">${isAdded ? 'Added' : '+ Add Trait'}</button>
+      </div>`;
+    listEl.appendChild(card);
+  });
+}
+
+function addTrait(traitId) {
+  if (!sheet.traits) sheet.traits = [];
+  if (sheet.traits.includes(traitId)) return;
+  sheet.traits.push(traitId);
+  renderTraitList();
+  renderTraits();
+  autoSave();
+}
+
+function removeTrait(traitId) {
+  sheet.traits = (sheet.traits || []).filter(id => id !== traitId);
+  renderTraits();
+  autoSave();
+}
+
+function renderTraits() {
+  const listEl = document.getElementById('traits-list');
+  if (!listEl) return;
+  const traitMap = {};
+  if (typeof TRAIT_DATA !== 'undefined') TRAIT_DATA.forEach(t => { traitMap[t.id] = t; });
+  const added = (sheet.traits || []).map(id => traitMap[id]).filter(Boolean);
+  if (added.length === 0) {
+    listEl.innerHTML = '<p class="feats-empty">No traits added yet.</p>';
+    return;
+  }
+  listEl.innerHTML = added.map(t => `
+    <div class="feat-entry">
+      <div class="feat-entry-header" onclick="this.closest('.feat-entry').classList.toggle('open')">
+        <span class="feat-entry-name">${esc(t.name)}</span>
+        <div class="feat-entry-actions">
+          <span class="feat-entry-chevron">&#9662;</span>
+          <button class="feat-entry-remove" onclick="event.stopPropagation();removeTrait('${t.id}')">&#x2715;</button>
         </div>
       </div>
-      ${f.desc?`<div class="feature-desc">${esc(f.desc)}</div>`:''}
+      <div class="feat-entry-body">
+        <p class="feat-entry-desc">${esc(t.description)}</p>
+      </div>
     </div>`).join('');
 }
-function removeFeature(i){ sheet.features.splice(i,1); renderFeatures(); autoSave(); }
+
+// ─── FEATS ────────────────────────────────────────────────────────────────────
+let _featFilter = 'all';
+
+function openFeatCompendium(){
+  const filterRow = document.getElementById('feat-filter-row');
+  const existingClassChip = filterRow.querySelector('[data-filter="class"]');
+  if(existingClassChip) existingClassChip.remove();
+  if(sheet.charClass){
+    const baseClass = sheet.charClass.trim().split(/[\s/]/)[0];
+    if(baseClass && typeof FEAT_DATA !== 'undefined' && FEAT_DATA.some(f => f.classes.includes(baseClass))){
+      const chip = document.createElement('button');
+      chip.className = 'feat-filter-chip';
+      chip.dataset.filter = 'class';
+      chip.textContent = baseClass;
+      chip.onclick = () => setFeatFilter('class');
+      filterRow.appendChild(chip);
+    }
+  }
+  _featFilter = 'all';
+  filterRow.querySelectorAll('.feat-filter-chip').forEach(c => {
+    c.classList.toggle('active', c.dataset.filter === 'all');
+  });
+  const searchEl = document.getElementById('feat-search-input');
+  if(searchEl) searchEl.value = '';
+  openModal('feat-compendium-modal');
+  renderFeatList();
+}
+
+function setFeatFilter(filter){
+  _featFilter = filter;
+  document.querySelectorAll('#feat-filter-row .feat-filter-chip').forEach(c => {
+    c.classList.toggle('active', c.dataset.filter === filter);
+  });
+  renderFeatList();
+}
+
+function renderFeatList(){
+  const search = (document.getElementById('feat-search-input').value || '').toLowerCase().trim();
+  const addedIds = new Set(sheet.feats || []);
+  const baseClass = sheet.charClass ? sheet.charClass.trim().split(/[\s/]/)[0] : '';
+  const data = (typeof FEAT_DATA !== 'undefined') ? FEAT_DATA : [];
+
+  const filtered = data.filter(f => {
+    if (_featFilter === 'class') {
+      if (!baseClass || !f.classes.includes(baseClass)) return false;
+    } else if (_featFilter !== 'all') {
+      if (f.category !== _featFilter) return false;
+    }
+    if(search && !f.name.toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  const listEl = document.getElementById('feat-comp-list');
+  if(!listEl) return;
+  listEl.innerHTML = '';
+
+  filtered.forEach(f => {
+    const isAdded = addedIds.has(f.id);
+    const card = document.createElement('div');
+    card.className = 'feat-card';
+    card.innerHTML = `
+      <div class="feat-card-header" onclick="toggleFeatCard(this)">
+        <div class="feat-card-left">
+          <div class="feat-card-name">${esc(f.name)}</div>
+          ${f.prereq ? `<div class="feat-card-prereq">Requires: ${esc(f.prereq)}</div>` : ''}
+        </div>
+        <div class="feat-card-right">
+          <span class="feat-card-chevron">&#9662;</span>
+        </div>
+      </div>
+      <div class="feat-card-body">
+        <p class="feat-card-desc">${esc(f.description)}</p>
+        <button class="feat-add-btn${isAdded?' added':''}"${isAdded?' disabled':''} onclick="addFeat('${f.id}')">${isAdded?'Added':'+ Add Feat'}</button>
+      </div>`;
+    listEl.appendChild(card);
+  });
+}
+
+function toggleFeatCard(headerEl){
+  headerEl.closest('.feat-card').classList.toggle('open');
+}
+
+function addFeat(featId){
+  if(!sheet.feats) sheet.feats = [];
+  if(sheet.feats.includes(featId)) return;
+  sheet.feats.push(featId);
+  autoSave();
+  renderFeats();
+  renderFeatList();
+}
+
+function renderFeats(){
+  const listEl = document.getElementById('feats-list');
+  if(!listEl) return;
+  if(!sheet.feats || sheet.feats.length === 0){
+    listEl.innerHTML = '<p class="feats-empty">No feats added yet.</p>';
+    return;
+  }
+  const featMap = {};
+  if(typeof FEAT_DATA !== 'undefined') FEAT_DATA.forEach(f => { featMap[f.id] = f; });
+  if (!featMap['magic-initiate']) {
+    featMap['magic-initiate'] = { id: 'magic-initiate', name: 'Magic Initiate', description: 'Legacy entry — see Magic Initiate (Cleric), (Druid), or (Wizard).' };
+  }
+  listEl.innerHTML = sheet.feats.map(id => {
+    const f = featMap[id];
+    if(!f) return '';
+    return `<div class="feat-entry" data-feat-id="${id}">
+      <div class="feat-entry-header" onclick="toggleFeatEntry(this)">
+        <span class="feat-entry-name">${esc(f.name)}</span>
+        <div class="feat-entry-actions">
+          <span class="feat-entry-chevron">&#9662;</span>
+          <button class="feat-entry-remove" onclick="removeFeat(event,'${id}')" aria-label="Remove feat">&#x2715;</button>
+        </div>
+      </div>
+      <div class="feat-entry-body">
+        <p class="feat-entry-desc">${esc(f.description)}</p>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleFeatEntry(headerEl){
+  headerEl.closest('.feat-entry').classList.toggle('open');
+}
+
+function removeFeat(event, featId){
+  event.stopPropagation();
+  sheet.feats = (sheet.feats || []).filter(id => id !== featId);
+  autoSave();
+  renderFeats();
+}
 
 // ─── SAVE / LOAD ──────────────────────────────────────────────────────────────
 function gatherSheet(){
@@ -5182,6 +5732,9 @@ function applySheet(data){
     warlockPactUsed:0,
     layOnHandsPool:null,
     bardicInspirationUsed:0,
+    feats:[],
+    backgroundId: null,
+    traits: [],
   };
   Object.assign(sheet, defaults, data);
 
@@ -5279,7 +5832,9 @@ function applySheet(data){
   updateSpellStats();
   renderSpellsByLevel();
   renderInventory();
-  renderFeatures();
+  renderBackground();
+  renderTraits();
+  renderFeats();
   updateCurrencyTotal();
   renderActionEconomy();
   updateSneakAttackWidget();
@@ -7139,7 +7694,6 @@ function init(){
   renderAttacks();
   renderSpellsByLevel();
   renderInventory();
-  renderFeatures();
   updateCombatInit();
   renderActionEconomy();
   calcAndSetAC();
@@ -7271,6 +7825,91 @@ if(window._firstOpen){
     <div style="margin-top:12px;display:flex;justify-content:flex-end;">
       <button class="modal-btn modal-btn-secondary" onclick="closeModal('compendium-modal')">Close</button>
     </div>
+  </div>
+</div>
+
+<!-- Background Compendium Modal -->
+<div class="modal-overlay" id="bg-compendium-modal" onclick="if(event.target===this)closeModal('bg-compendium-modal')">
+  <div class="modal feat-comp-modal">
+    <div class="feat-comp-header">
+      <div>
+        <p class="feat-comp-brand">· TAVERN ·</p>
+        <h2 class="feat-comp-title">Backgrounds</h2>
+      </div>
+      <button class="modal-close" onclick="closeModal('bg-compendium-modal')">&#x2715;</button>
+    </div>
+    <div class="feat-comp-search-row">
+      <input type="text" id="bg-search-input" class="feat-search-input" placeholder="Search backgrounds…" oninput="renderBgList()">
+    </div>
+    <div class="feat-comp-list" id="bg-comp-list"></div>
+  </div>
+</div>
+
+<!-- Background Starting Items Confirm Modal -->
+<div class="modal-overlay" id="bg-items-confirm-modal">
+  <div class="modal">
+    <h2>Add Starting Items?</h2>
+    <p style="font-size:13px;color:var(--ink-light);margin:0 0 4px;line-height:1.6;">
+      Add <span id="bg-items-confirm-name"></span> starting items to your inventory?
+    </p>
+    <p style="font-size:12px;color:var(--ink-muted);margin:0;">Your existing items will not be removed.</p>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-secondary" onclick="skipBgItems()">Skip</button>
+      <button class="modal-btn modal-btn-primary" onclick="confirmAddBgItems()">Add Items</button>
+    </div>
+  </div>
+</div>
+
+<!-- Trait Compendium Modal -->
+<div class="modal-overlay" id="trait-compendium-modal" onclick="if(event.target===this)closeModal('trait-compendium-modal')">
+  <div class="modal feat-comp-modal">
+    <div class="feat-comp-header">
+      <div>
+        <p class="feat-comp-brand">· TAVERN ·</p>
+        <h2 class="feat-comp-title">Traits</h2>
+      </div>
+      <button class="modal-close" onclick="closeModal('trait-compendium-modal')">&#x2715;</button>
+    </div>
+    <div class="feat-comp-search-row">
+      <input type="text" id="trait-search-input" class="feat-search-input" placeholder="Search traits…" oninput="renderTraitList()">
+    </div>
+    <div class="feat-filter-row" id="trait-filter-row">
+      <button class="feat-filter-chip active" data-filter="all" onclick="setTraitFilter('all')">All</button>
+      <button class="feat-filter-chip" data-filter="Aasimar" onclick="setTraitFilter('Aasimar')">Aasimar</button>
+      <button class="feat-filter-chip" data-filter="Dragonborn" onclick="setTraitFilter('Dragonborn')">Dragonborn</button>
+      <button class="feat-filter-chip" data-filter="Dwarf" onclick="setTraitFilter('Dwarf')">Dwarf</button>
+      <button class="feat-filter-chip" data-filter="Elf" onclick="setTraitFilter('Elf')">Elf</button>
+      <button class="feat-filter-chip" data-filter="Gnome" onclick="setTraitFilter('Gnome')">Gnome</button>
+      <button class="feat-filter-chip" data-filter="Goliath" onclick="setTraitFilter('Goliath')">Goliath</button>
+      <button class="feat-filter-chip" data-filter="Halfling" onclick="setTraitFilter('Halfling')">Halfling</button>
+      <button class="feat-filter-chip" data-filter="Human" onclick="setTraitFilter('Human')">Human</button>
+      <button class="feat-filter-chip" data-filter="Orc" onclick="setTraitFilter('Orc')">Orc</button>
+      <button class="feat-filter-chip" data-filter="Tiefling" onclick="setTraitFilter('Tiefling')">Tiefling</button>
+    </div>
+    <div class="feat-comp-list" id="trait-comp-list"></div>
+  </div>
+</div>
+
+<!-- Feat Compendium Modal -->
+<div class="modal-overlay" id="feat-compendium-modal" onclick="if(event.target===this)closeModal('feat-compendium-modal')">
+  <div class="modal feat-comp-modal">
+    <div class="feat-comp-header">
+      <div>
+        <p class="feat-comp-brand">· TAVERN ·</p>
+        <h2 class="feat-comp-title">Feat Compendium</h2>
+      </div>
+      <button class="modal-close" onclick="closeModal('feat-compendium-modal')">&#x2715;</button>
+    </div>
+    <div class="feat-comp-search-row">
+      <input type="text" id="feat-search-input" class="feat-search-input" placeholder="Search feats…" oninput="renderFeatList()">
+    </div>
+    <div class="feat-filter-row" id="feat-filter-row">
+      <button class="feat-filter-chip active" data-filter="all" onclick="setFeatFilter('all')">All</button>
+      <button class="feat-filter-chip" data-filter="general" onclick="setFeatFilter('general')">General</button>
+      <button class="feat-filter-chip" data-filter="origin" onclick="setFeatFilter('origin')">Origin</button>
+      <button class="feat-filter-chip" data-filter="species" onclick="setFeatFilter('species')">Species</button>
+    </div>
+    <div class="feat-comp-list" id="feat-comp-list"></div>
   </div>
 </div>
 
@@ -7831,6 +8470,160 @@ function addSpellFromCompendium(name){
   renderCompendium(); // refresh to show checkmark
   toast(`${sp.name} added to your ${_isWizard()?'spellbook':'spell list'}`);
 }
+
+// FEAT COMPENDIUM DATA
+// ══════════════════════════════════════════════════════
+const FEAT_DATA = [
+  {id:'actor',name:'Actor',category:'general',classes:['Bard'],prereq:null,description:'+1 to CHA (max 20). You have advantage on Deception and Performance checks when impersonating another person. You can mimic the speech of a person or the sounds of a creature you\'ve heard for at least 1 minute — a DC 14 Insight check is needed to detect the imitation.'},
+  {id:'alert',name:'Alert',category:'origin',classes:['Fighter','Rogue','Ranger'],prereq:null,description:'You can\'t be surprised while conscious. You get +5 to initiative rolls. Creatures that are hidden from you don\'t gain advantage on attack rolls against you — being unseen doesn\'t give them a free hit.'},
+  {id:'athlete',name:'Athlete',category:'general',classes:[],prereq:'STR or DEX 13',description:'+1 to STR or DEX (your choice, max 20). Standing up from prone costs only 5 feet of movement. Climbing doesn\'t cost extra movement. A running jump requires only 5 feet of running start instead of 10.'},
+  {id:'charger',name:'Charger',category:'general',classes:['Fighter','Barbarian'],prereq:null,description:'When you use the Dash action, you can make a melee weapon attack or shove a creature as a bonus action. If you moved at least 10 feet in a straight line before the attack, you either deal +5 damage or push the target up to 10 feet on a hit.'},
+  {id:'crossbow-expert',name:'Crossbow Expert',category:'general',classes:['Fighter','Ranger','Rogue'],prereq:null,description:'You ignore the loading property of crossbows you\'re proficient with. Being within 5 feet of a hostile creature doesn\'t impose disadvantage on your ranged attack rolls. When you use the Attack action with a one-handed weapon, you can use a bonus action to attack with a hand crossbow you\'re holding.'},
+  {id:'defensive-duelist',name:'Defensive Duelist',category:'general',classes:['Rogue','Ranger','Bard'],prereq:'DEX 13',description:'When wielding a finesse weapon you\'re proficient with and a creature hits you with a melee attack, you can use your reaction to add your proficiency bonus to your AC for that attack — potentially turning the hit into a miss.'},
+  {id:'dual-wielder',name:'Dual Wielder',category:'general',classes:['Fighter','Rogue','Ranger'],prereq:null,description:'+1 to AC while holding a separate melee weapon in each hand. You can use two-weapon fighting with weapons that aren\'t light. You can draw or stow two one-handed weapons at once instead of just one.'},
+  {id:'dungeon-delver',name:'Dungeon Delver',category:'general',classes:[],prereq:null,description:'Advantage on Perception and Investigation checks to detect secret doors. Advantage on saving throws against traps. Resistance to damage from traps. You can search for traps while moving at a normal pace.'},
+  {id:'durable',name:'Durable',category:'general',classes:[],prereq:null,description:'+1 to CON (max 20). When you roll a Hit Die to regain HP during a short rest, the minimum HP you regain equals twice your CON modifier (minimum 2).'},
+  {id:'elemental-adept',name:'Elemental Adept',category:'general',classes:['Wizard','Sorcerer','Warlock','Druid'],prereq:'Ability to cast at least one spell',description:'Choose a damage type: acid, cold, fire, lightning, or thunder. Your spells ignore resistance to that type. When you roll damage for a spell of that type, treat any 1 on a die as a 2. You can take this feat multiple times, choosing a different damage type each time.'},
+  {id:'grappler',name:'Grappler',category:'general',classes:[],prereq:'STR 13',description:'Advantage on attack rolls against a creature you\'re grappling. As an action, you can try to pin a grappled creature — make an Athletics check contested by its Athletics or Acrobatics. On a success, both of you are restrained until the grapple ends.'},
+  {id:'great-weapon-master',name:'Great Weapon Master',category:'general',classes:['Fighter','Barbarian','Paladin'],prereq:null,description:'When you score a critical hit or reduce a creature to 0 HP with a melee weapon, you can make one melee weapon attack as a bonus action on the same turn. Before any melee attack with a heavy weapon you\'re proficient with, you can choose to take -5 to the attack roll — if it hits, add +10 to the damage.'},
+  {id:'healer',name:'Healer',category:'origin',classes:[],prereq:null,description:'Using a healer\'s kit to stabilize a dying creature also restores 1 HP to it. As an action, spend one use of a healer\'s kit to restore 1d6 + 4 HP to a creature, plus HP equal to its maximum number of Hit Dice. A creature can\'t benefit from this again until it finishes a short or long rest.'},
+  {id:'heavily-armored',name:'Heavily Armored',category:'general',classes:['Cleric','Druid','Bard'],prereq:'Proficiency with medium armor',description:'+1 to STR (max 20). You gain proficiency with heavy armor.'},
+  {id:'heavy-armor-master',name:'Heavy Armor Master',category:'general',classes:['Fighter','Paladin'],prereq:'Proficiency with heavy armor',description:'+1 to STR (max 20). While wearing heavy armor, bludgeoning, piercing, and slashing damage from non-magical weapon attacks is reduced by 3.'},
+  {id:'inspiring-leader',name:'Inspiring Leader',category:'general',classes:['Paladin','Bard','Cleric'],prereq:'CHA 13',description:'After a short rest, spend 10 minutes giving a motivating speech to up to 6 friendly creatures who can hear and understand you (including yourself). Each gains temporary HP equal to your level + your CHA modifier. A creature can\'t benefit from this again until it finishes a short or long rest.'},
+  {id:'keen-mind',name:'Keen Mind',category:'general',classes:[],prereq:null,description:'+1 to INT (max 20). You always know which way is north. You always know how many hours remain before sunrise or sunset. You can accurately recall anything you\'ve seen or heard within the past month.'},
+  {id:'lightly-armored',name:'Lightly Armored',category:'general',classes:[],prereq:null,description:'+1 to STR or DEX (max 20). You gain proficiency with light armor.'},
+  {id:'linguist',name:'Linguist',category:'general',classes:[],prereq:null,description:'+1 to INT (max 20). You learn 3 languages of your choice. You can create written ciphers that others can\'t read without your key or a successful INT check (DC = your INT score + your proficiency bonus).'},
+  {id:'lucky',name:'Lucky',category:'origin',classes:[],prereq:null,description:'3 luck points per long rest. When you make an attack roll, ability check, or saving throw, spend a luck point to roll an extra d20 and choose which result to use — you can decide after seeing the original roll but before the outcome is determined. You can also use a luck point when a creature attacks you, rolling a d20 and choosing whether the attack uses their roll or yours.'},
+  {id:'mage-slayer',name:'Mage Slayer',category:'general',classes:['Fighter','Paladin','Rogue'],prereq:null,description:'When a creature within 5 feet of you casts a spell, you can use your reaction to make a melee weapon attack against it. When you damage a concentrating creature, it has disadvantage on its Constitution save to maintain concentration. You have advantage on saving throws against spells cast by creatures within 5 feet of you.'},
+  {id:'magic-initiate-cleric',name:'Magic Initiate (Cleric)',category:'origin',classes:[],prereq:null,description:'Learn two cleric cantrips and one 1st-level cleric spell. Cast the spell once per long rest without a spell slot — or use a slot if you have one. Your spellcasting ability for these is WIS.'},
+  {id:'magic-initiate-druid',name:'Magic Initiate (Druid)',category:'origin',classes:[],prereq:null,description:'Learn two druid cantrips and one 1st-level druid spell. Cast the spell once per long rest without a spell slot — or use a slot if you have one. Your spellcasting ability for these is WIS.'},
+  {id:'magic-initiate-wizard',name:'Magic Initiate (Wizard)',category:'origin',classes:[],prereq:null,description:'Learn two wizard cantrips and one 1st-level wizard spell. Cast the spell once per long rest without a spell slot — or use a slot if you have one. Your spellcasting ability for these is INT.'},
+  {id:'martial-adept',name:'Martial Adept',category:'general',classes:['Fighter','Paladin','Ranger'],prereq:null,description:'Learn 2 maneuvers from the Battle Master fighter subclass. Gain 1 superiority die (d6) that recharges on a short or long rest. If you already have superiority dice, this adds to your pool and matches the size of your existing dice.'},
+  {id:'medium-armor-master',name:'Medium Armor Master',category:'general',classes:['Cleric','Druid','Bard','Ranger'],prereq:'Proficiency with medium armor',description:'Wearing medium armor no longer imposes disadvantage on Stealth checks. Your maximum DEX bonus to AC in medium armor increases from +2 to +3.'},
+  {id:'mobile',name:'Mobile',category:'general',classes:['Monk','Rogue','Barbarian','Ranger'],prereq:null,description:'+10 feet to your movement speed. When you use the Dash action, difficult terrain doesn\'t cost extra movement that turn. When you make a melee attack against a creature, you don\'t provoke opportunity attacks from it for the rest of that turn — whether or not the attack hits.'},
+  {id:'moderately-armored',name:'Moderately Armored',category:'general',classes:['Wizard','Sorcerer','Warlock','Bard'],prereq:'Proficiency with light armor',description:'+1 to STR or DEX (max 20). You gain proficiency with medium armor and shields.'},
+  {id:'mounted-combatant',name:'Mounted Combatant',category:'general',classes:['Fighter','Paladin','Ranger'],prereq:null,description:'Advantage on melee attack rolls against unmounted creatures smaller than your mount. You can redirect an attack targeting your mount to target you instead. If your mount is hit by an effect requiring a DEX save for half damage, it takes no damage on a success and half on a failure (as long as you\'re not incapacitated).'},
+  {id:'observant',name:'Observant',category:'general',classes:['Rogue','Ranger','Wizard'],prereq:null,description:'+1 to INT or WIS (max 20). +5 to your passive Perception and passive Investigation scores. If you can see a creature\'s mouth while it speaks a language you know, you can read its lips.'},
+  {id:'polearm-master',name:'Polearm Master',category:'general',classes:['Fighter','Barbarian','Paladin'],prereq:null,description:'When you take the Attack action with a glaive, halberd, quarterstaff, or spear, you can make a bonus action attack with the butt end of the weapon — a d4 bludgeoning hit. While wielding any of those weapons (plus a pike), creatures provoke opportunity attacks from you when they enter your reach, not just when they try to leave it.'},
+  {id:'resilient',name:'Resilient',category:'general',classes:[],prereq:null,description:'Choose one ability score: it increases by 1 (max 20) and you gain proficiency in its saving throw. Constitution is the most common choice — it protects concentration spells and helps you stay standing when you take heavy damage.'},
+  {id:'ritual-caster',name:'Ritual Caster',category:'general',classes:['Wizard','Cleric','Druid'],prereq:'INT or WIS 13',description:'Choose a spellcasting class. Learn 2 first-level ritual spells from that class\'s list, recorded in a ritual book. Any ritual spell you find and can cast can be added to your book. You can cast any ritual in your book as a ritual — no spell slot required. Spellcasting ability is INT for wizard, WIS for cleric or druid, CHA for the rest.'},
+  {id:'savage-attacker',name:'Savage Attacker',category:'origin',classes:[],prereq:null,description:'Once per turn, when you roll damage for a melee weapon attack, you can roll the damage dice twice and use the higher result.'},
+  {id:'sentinel',name:'Sentinel',category:'general',classes:['Fighter','Paladin','Monk'],prereq:null,description:'When you hit a creature with an opportunity attack, its speed drops to 0 for the rest of that turn — it\'s not going anywhere. Creatures within 5 feet of you still provoke opportunity attacks from you even if they use the Disengage action. When a creature within 5 feet attacks someone other than you, you can use your reaction to make a melee weapon attack against it.'},
+  {id:'sharpshooter',name:'Sharpshooter',category:'general',classes:['Fighter','Ranger','Rogue'],prereq:null,description:'Attacking at long range doesn\'t impose disadvantage on your ranged attack rolls. Your ranged attacks ignore half cover and three-quarters cover. Before any ranged weapon attack you\'re proficient with, you can choose to take -5 to the attack roll — if it hits, add +10 to the damage.'},
+  {id:'shield-master',name:'Shield Master',category:'general',classes:['Fighter','Paladin','Cleric'],prereq:null,description:'If you take the Attack action on your turn, you can use a bonus action to shove a creature within 5 feet with your shield. You can add your shield\'s AC bonus to DEX saving throws against spells or effects that target only you. If you succeed on such a save for half damage, you take no damage instead.'},
+  {id:'skilled',name:'Skilled',category:'origin',classes:[],prereq:null,description:'Gain proficiency in any combination of 3 skills or tools of your choice.'},
+  {id:'skulker',name:'Skulker',category:'general',classes:['Rogue','Ranger'],prereq:'DEX 13',description:'You can attempt to hide when you\'re only lightly obscured. Missing with a ranged attack while hidden doesn\'t reveal your position. Dim light doesn\'t impose disadvantage on your Perception checks that rely on sight.'},
+  {id:'spell-sniper',name:'Spell Sniper',category:'general',classes:['Wizard','Sorcerer','Warlock','Druid','Cleric','Bard'],prereq:'Ability to cast at least one spell',description:'The range of spells that require attack rolls doubles. Your ranged spell attacks ignore half cover and three-quarters cover. Learn one cantrip that requires an attack roll from any class\'s list — spellcasting ability matches the class you chose.'},
+  {id:'tough',name:'Tough',category:'origin',classes:[],prereq:null,description:'Your hit point maximum increases by twice your current level when you take this feat. Every level after, your max HP increases by an additional 2. No activation, no condition — it\'s a permanent increase to how much damage you can take.'},
+  {id:'war-caster',name:'War Caster',category:'general',classes:['Wizard','Sorcerer','Warlock','Cleric','Druid','Paladin','Bard'],prereq:'Ability to cast at least one spell',description:'Advantage on Constitution saving throws to maintain concentration when you take damage. Cast spells with somatic components even with weapons or a shield in both hands. When a creature\'s movement provokes an opportunity attack from you, you can cast a spell targeting only that creature instead of making a weapon attack — casting time must be 1 action.'},
+  {id:'weapon-master',name:'Weapon Master',category:'general',classes:['Fighter','Barbarian'],prereq:null,description:'+1 to STR or DEX (max 20). Gain proficiency with 4 weapons of your choice — each must be simple or martial.'},
+  // Origin feats
+  {id:'crafter',name:'Crafter',category:'origin',classes:[],prereq:null,description:'Proficiency with three artisan\'s tools of your choice. When you buy a nonmagical item, you can get it at a 20% discount if you have the relevant artisan\'s tools proficiency and spend time crafting it between sessions.'},
+  {id:'musician',name:'Musician',category:'origin',classes:[],prereq:null,description:'Proficiency with three musical instruments of your choice. After a long rest, you can play music to give up to six creatures Heroic Inspiration (a d6 they can add to one d20 roll before your next long rest).'},
+  {id:'tavern-brawler',name:'Tavern Brawler',category:'origin',classes:[],prereq:null,description:'Your unarmed strikes deal 1d4 + STR bludgeoning damage. Proficient with improvised weapons. When you hit with an unarmed strike or improvised weapon, you can attempt a grapple as a bonus action. Reroll 1s on damage with unarmed strikes and improvised weapons.'},
+  // Species feats
+  {id:'dwarven-fortitude',name:'Dwarven Fortitude',category:'species',classes:[],prereq:'Dwarf',description:'+1 to CON (max 20). When you Dodge, spend one of your Hit Dice to heal — roll the die, add your CON modifier, and regain that many HP.'},
+  {id:'elven-accuracy',name:'Elven Accuracy',category:'species',classes:[],prereq:'Elf or Half-Elf',description:'+1 to DEX, INT, WIS, or CHA (your choice, max 20). When you have advantage on an attack roll and use DEX, INT, WIS, or CHA, you can reroll one of the dice and use whichever result you prefer.'},
+  {id:'fade-away',name:'Fade Away',category:'species',classes:[],prereq:'Gnome',description:'+1 to DEX or INT (max 20). When you take damage, you can use your reaction to turn invisible until the start of your next turn or until you attack, deal damage, or force a saving throw. Once per short or long rest.'},
+  {id:'fey-teleportation',name:'Fey Teleportation',category:'species',classes:[],prereq:'High Elf',description:'+1 to INT or CHA (max 20). Learn Misty Step — cast it once per short or long rest without a spell slot. You can also cast it with any spell slots you have. INT or CHA is your spellcasting ability. You also learn Elvish if you don\'t already know it.'},
+  {id:'flames-of-phlegethos',name:'Flames of Phlegethos',category:'species',classes:[],prereq:'Tiefling',description:'+1 to INT or CHA (max 20). When you roll fire damage for a spell, reroll any 1s and use the new rolls. When you cast a fire damage spell, wreathing flames surround you until the end of your next turn — any creature hitting you with a melee attack takes 1d4 fire damage.'},
+  {id:'infernal-constitution',name:'Infernal Constitution',category:'species',classes:[],prereq:'Tiefling',description:'+1 to CON (max 20). Resistance to cold and poison damage. Advantage on saving throws against being poisoned.'},
+  {id:'orcish-fury',name:'Orcish Fury',category:'species',classes:[],prereq:'Half-Orc',description:'+1 to STR or CON (max 20). Once per short or long rest, when you hit with a weapon, roll one of the weapon\'s damage dice an extra time and add it. When you use Relentless Endurance to stay at 1 HP, you can immediately use your reaction to make one weapon attack.'},
+  {id:'second-chance',name:'Second Chance',category:'species',classes:[],prereq:'Halfling',description:'+1 to DEX, CON, or CHA (max 20). When a creature hits you with an attack, use your reaction to force a reroll against you. They must use the new roll. Once per short or long rest (resets on initiative roll).'},
+  {id:'bountiful-luck',name:'Bountiful Luck',category:'species',classes:[],prereq:'Halfling',description:'When an ally within 30 feet rolls a 1 on a d20 for an attack, ability check, or saving throw, you can use your reaction to let them reroll. They must use the new result. You can\'t use this if you\'re incapacitated.'},
+  {id:'squat-nimbleness',name:'Squat Nimbleness',category:'species',classes:[],prereq:'Dwarf, Gnome, or Halfling',description:'+1 to STR or DEX (max 20). Your walking speed increases by 5 feet. Proficiency in Acrobatics or Athletics (your choice). You have advantage on any STR (Athletics) or DEX (Acrobatics) check to escape a grapple.'},
+  {id:'dragon-fear',name:'Dragon Fear',category:'species',classes:[],prereq:'Dragonborn',description:'+1 to STR, CON, or CHA (max 20). When frightened, you can roar instead of fleeing — use your Breath Weapon as a bonus action. Creatures within 30 feet that can see or hear you must make a WIS save (DC = 8 + proficiency + CHA) or be frightened of you until the end of your next turn. Once per short or long rest.'},
+  {id:'dragon-hide',name:'Dragon Hide',category:'species',classes:[],prereq:'Dragonborn',description:'+1 to STR, CON, or CHA (max 20). Scales cover your skin — natural armor gives AC 13 + DEX modifier when not wearing armor (you can use a shield). Your unarmed strikes deal 1d4 slashing damage.'},
+  {id:'drow-high-magic',name:'Drow High Magic',category:'species',classes:[],prereq:'Drow',description:'Learn Detect Magic — cast it at will without a slot. Also learn Levitate and Dispel Magic — cast each once per long rest without a slot. CHA is your spellcasting ability for all three.'},
+  {id:'wood-elf-magic',name:'Wood Elf Magic',category:'species',classes:[],prereq:'Wood Elf',description:'Learn one druid cantrip of your choice. Also learn Longstrider and Pass without Trace — cast each once per short or long rest without a slot. WIS is your spellcasting ability.'},
+  {id:'prodigy',name:'Prodigy',category:'species',classes:[],prereq:'Half-Elf, Half-Orc, or Human',description:'Gain proficiency in one skill, one tool, and one language of your choice. Gain expertise in one skill you\'re already proficient with.'}
+];
+
+const BACKGROUND_DATA = [
+  {id:'acolyte',name:'Acolyte',description:'You spent your formative years in a temple, learning the rites, prayers, and hierarchies of a faith. You know how to comfort the dying, read sacred texts, and navigate the political currents of a religious institution. You carry that discipline — and its weight — wherever you go.',skills:['Insight','Religion'],tool:'Calligrapher\'s Supplies',originFeat:'Magic Initiate (Cleric)',gold:10,startingItems:[{name:'Calligrapher\'s Supplies',qty:1},{name:'Book (prayers)',qty:1},{name:'Holy Symbol',qty:1},{name:'Parchment',qty:5}]},
+  {id:'artisan',name:'Artisan',description:'You learned a trade at a workbench — hours of careful repetition until your hands knew the craft without thinking. You understand materials, tools, and the satisfaction of making something that lasts. Merchants respect your eye for quality.',skills:['Investigation','Persuasion'],tool:'Artisan\'s Tools (one type)',originFeat:'Crafter',gold:15,startingItems:[{name:'Artisan\'s Tools',qty:1},{name:'Merchant\'s Scale',qty:1},{name:'Fine Clothes',qty:1}]},
+  {id:'charlatan',name:'Charlatan',description:'You\'ve made a living reading people — what they want to believe, what they\'re afraid of, and how to exploit both. You\'re not evil, exactly, but you\'ve blurred the line between persuasion and manipulation so many times it no longer bothers you.',skills:['Deception','Sleight of Hand'],tool:'Forgery Kit',originFeat:'Skilled',gold:15,startingItems:[{name:'Forgery Kit',qty:1},{name:'Fine Clothes',qty:1},{name:'Costume',qty:1}]},
+  {id:'criminal',name:'Criminal',description:'You operated outside the law — whether as a thief, smuggler, spy, or enforcer. You know how to move unseen, who to bribe, and when to run. The skills you built then are hard to unlearn, and occasionally they\'re exactly what a party needs.',skills:['Sleight of Hand','Stealth'],tool:'Thieves\' Tools',originFeat:'Alert',gold:15,startingItems:[{name:'Thieves\' Tools',qty:1},{name:'Dark Common Clothes with Hood',qty:1}]},
+  {id:'entertainer',name:'Entertainer',description:'You performed — on stage, in taverns, in noble courts, or on street corners. You know how to command a room, read an audience, and recover from a bad night. Fame is fleeting, but the skills are yours forever.',skills:['Acrobatics','Performance'],tool:'Musical Instrument (one type)',originFeat:'Musician',gold:15,startingItems:[{name:'Musical Instrument',qty:1},{name:'Costume',qty:1},{name:'Favor from Admirer',qty:1}]},
+  {id:'farmer',name:'Farmer',description:'You grew up working land — planting, harvesting, mending fences, and reading weather. Hard work shaped your body and your patience. You know more about the rhythms of the natural world than most adventurers ever will.',skills:['Animal Handling','Nature'],tool:'Carpenter\'s Tools',originFeat:'Tough',gold:10,startingItems:[{name:'Carpenter\'s Tools',qty:1},{name:'Shovel',qty:1},{name:'Common Clothes',qty:1}]},
+  {id:'guard',name:'Guard',description:'You stood watch — at a gate, a warehouse, a noble\'s estate, or a prison. You learned to stay alert through long boring shifts and to act fast when things stopped being boring. You\'ve seen what people do when they think no one is watching.',skills:['Athletics','Perception'],tool:'Gaming Set (one type)',originFeat:'Alert',gold:10,startingItems:[{name:'Gaming Set',qty:1},{name:'Uniform',qty:1},{name:'Horn',qty:1}]},
+  {id:'guide',name:'Guide',description:'You led people through wilderness — scouting paths, reading terrain, and keeping travelers alive in places maps don\'t cover. You know how to disappear into the landscape and how to find your way back out.',skills:['Stealth','Survival'],tool:'Cartographer\'s Tools',originFeat:'Magic Initiate (Druid)',gold:10,startingItems:[{name:'Cartographer\'s Tools',qty:1},{name:'Traveler\'s Clothes',qty:1},{name:'Hunting Trap',qty:1}]},
+  {id:'hermit',name:'Hermit',description:'You lived alone — in a cave, a forest hut, a monastery cell — seeking something most people don\'t bother looking for. You found insights in silence that others miss entirely. Returning to society hasn\'t erased what you learned out there.',skills:['Medicine','Religion'],tool:'Herbalism Kit',originFeat:'Magic Initiate (Druid)',gold:5,startingItems:[{name:'Herbalism Kit',qty:1},{name:'Scroll of Parchment (personal notes)',qty:1},{name:'Common Clothes',qty:1}]},
+  {id:'merchant',name:'Merchant',description:'You ran trade — buying, selling, negotiating, and reading the mood of a market. You know the value of things, how to move cargo, and how to talk your way out of a customs inspection. Money is information, and you\'ve always been good at gathering both.',skills:['Animal Handling','Persuasion'],tool:'Navigator\'s Tools',originFeat:'Lucky',gold:25,startingItems:[{name:'Navigator\'s Tools',qty:1},{name:'Fine Clothes',qty:1},{name:'Letter of Introduction from Guild',qty:1}]},
+  {id:'noble',name:'Noble',description:'You were born into or elevated to a position of social power. You know etiquette, history, and the unspoken rules that govern people with money and titles. You\'ve navigated court intrigue and know that the real battles are often fought over dinner.',skills:['History','Persuasion'],tool:'Gaming Set (one type)',originFeat:'Skilled',gold:25,startingItems:[{name:'Gaming Set',qty:1},{name:'Fine Clothes',qty:1},{name:'Signet Ring',qty:1},{name:'Scroll of Pedigree',qty:1}]},
+  {id:'sage',name:'Sage',description:'You spent years in study — in libraries, academies, or under the tutelage of someone who knew more than you. You\'ve read enough to know how much you don\'t know, which puts you ahead of most people. Your instinct when faced with a problem is to find a book about it.',skills:['Arcana','History'],tool:'Calligrapher\'s Supplies',originFeat:'Magic Initiate (Wizard)',gold:10,startingItems:[{name:'Calligrapher\'s Supplies',qty:1},{name:'Book (notes)',qty:1},{name:'Parchment',qty:10},{name:'Common Clothes',qty:1}]},
+  {id:'sailor',name:'Sailor',description:'You worked a ship — on a merchant vessel, a privateer, or maybe something less legal. You know knots, weather, navigation, and how to handle yourself when a port town turns hostile. The sea does not care about your feelings and neither do you.',skills:['Acrobatics','Perception'],tool:'Navigator\'s Tools',originFeat:'Tavern Brawler',gold:10,startingItems:[{name:'Navigator\'s Tools',qty:1},{name:'Rope (50 ft)',qty:1},{name:'Common Clothes',qty:1}]},
+  {id:'scribe',name:'Scribe',description:'You copied documents, recorded transactions, drafted contracts, and kept the records that hold institutions together. You developed an eye for detail, a steady hand, and the ability to spot when something has been changed or forged.',skills:['Investigation','Perception'],tool:'Calligrapher\'s Supplies',originFeat:'Skilled',gold:10,startingItems:[{name:'Calligrapher\'s Supplies',qty:1},{name:'Parchment',qty:20},{name:'Fine Clothes',qty:1}]},
+  {id:'soldier',name:'Soldier',description:'You served in a military force — in a standing army, a mercenary company, or a militia. You understand unit tactics, chain of command, and what it costs to hold a line when everything is going wrong. The habits of discipline are hard to shake.',skills:['Athletics','Intimidation'],tool:'Gaming Set (one type)',originFeat:'Savage Attacker',gold:10,startingItems:[{name:'Gaming Set',qty:1},{name:'Common Clothes',qty:1},{name:'Soldier\'s Trophy',qty:1}]},
+  {id:'wayfarer',name:'Wayfarer',description:'You lived on the road — as a wanderer, a vagrant, a pilgrim, or someone running from something. You know how to find food and shelter in strange places and how to avoid trouble when you can\'t afford it.',skills:['Insight','Stealth'],tool:'Thieves\' Tools',originFeat:'Lucky',gold:16,startingItems:[{name:'Thieves\' Tools',qty:1},{name:'Traveler\'s Clothes',qty:1},{name:'Knife',qty:1}]}
+];
+
+const TRAIT_DATA = [
+  // Aasimar
+  {id:'aasimar-celestial-resistance',name:'Celestial Resistance',species:'Aasimar',description:'You have resistance to necrotic and radiant damage. The light in your blood pushes back against the things that would snuff it out.'},
+  {id:'aasimar-darkvision',name:'Darkvision',species:'Aasimar',description:'You can see in dim light within 60 feet as if it were bright light, and in darkness as if it were dim light. You can\'t discern color in darkness, only shades of gray.'},
+  {id:'aasimar-healing-hands',name:'Healing Hands',species:'Aasimar',description:'As an action, touch a creature and restore HP equal to your proficiency bonus. Once per long rest.'},
+  {id:'aasimar-light-bearer',name:'Light Bearer',species:'Aasimar',description:'You know the Light cantrip. CHA is your spellcasting ability for it.'},
+  {id:'aasimar-celestial-revelation',name:'Celestial Revelation',species:'Aasimar',description:'Starting at level 3, you can transform as a bonus action once per long rest. Depending on your subtype — Protector (radiant wings, fly speed equal to walk speed), Scourge (blazing light, necrotic/radiant damage to nearby creatures), or Fallen (dark aura, necrotic damage to nearby creatures) — the transformation lasts 1 minute.'},
+  // Dragonborn
+  {id:'dragonborn-draconic-ancestry',name:'Draconic Ancestry',species:'Dragonborn',description:'You have dragon ancestry of a specific type (Black, Blue, Brass, Bronze, Copper, Gold, Green, Red, Silver, White). This determines your breath weapon damage type and your damage resistance.'},
+  {id:'dragonborn-breath-weapon',name:'Breath Weapon',species:'Dragonborn',description:'As an action, exhale destructive energy. The shape (line or cone), size, damage type, and saving throw depend on your draconic ancestry. Damage is 2d6 at level 1, scaling up. Proficiency bonus uses per long rest.'},
+  {id:'dragonborn-damage-resistance',name:'Damage Resistance',species:'Dragonborn',description:'You have resistance to the damage type associated with your draconic ancestry.'},
+  {id:'dragonborn-darkvision',name:'Darkvision',species:'Dragonborn',description:'You can see in dim light within 60 feet as if it were bright light, and in darkness as if it were dim light. You can\'t discern color in darkness, only shades of gray.'},
+  // Dwarf
+  {id:'dwarf-darkvision',name:'Darkvision',species:'Dwarf',description:'Accustomed to life underground, you can see in dim light within 60 feet as if it were bright light, and in darkness as if it were dim light. You can\'t discern color in darkness, only shades of gray.'},
+  {id:'dwarf-dwarven-resilience',name:'Dwarven Resilience',species:'Dwarf',description:'You have advantage on saving throws against poison and resistance to poison damage.'},
+  {id:'dwarf-dwarven-toughness',name:'Dwarven Toughness',species:'Dwarf',description:'Your hit point maximum increases by 1, and it increases by 1 every time you gain a level. (Hill Dwarf only.)'},
+  {id:'dwarf-stonecunning',name:'Stonecunning',species:'Dwarf',description:'Whenever you make an INT (History) check related to the origin of stonework, you are considered proficient in the History skill and add double your proficiency bonus to the check.'},
+  // Elf
+  {id:'elf-darkvision',name:'Darkvision',species:'Elf',description:'You can see in dim light within 60 feet as if it were bright light, and in darkness as if it were dim light. You can\'t discern color in darkness, only shades of gray.'},
+  {id:'elf-keen-senses',name:'Keen Senses',species:'Elf',description:'You have proficiency in the Perception skill.'},
+  {id:'elf-fey-ancestry',name:'Fey Ancestry',species:'Elf',description:'You have advantage on saving throws against being charmed, and magic can\'t put you to sleep.'},
+  {id:'elf-trance',name:'Trance',species:'Elf',description:'Elves don\'t sleep. Instead they meditate deeply for 4 hours a day. After resting this way, you gain the same benefit a human does from 8 hours of sleep.'},
+  {id:'elf-weapon-training',name:'Elf Weapon Training',species:'Elf',description:'You have proficiency with the longsword, shortsword, shortbow, and longbow. (High Elf only.)'},
+  {id:'elf-cantrip',name:'High Elf Cantrip',species:'Elf',description:'You know one cantrip of your choice from the wizard spell list. INT is your spellcasting ability for it. (High Elf only.)'},
+  {id:'elf-fleet-of-foot',name:'Fleet of Foot',species:'Elf',description:'Your base walking speed increases to 35 feet. (Wood Elf only.)'},
+  {id:'elf-mask-of-the-wild',name:'Mask of the Wild',species:'Elf',description:'You can attempt to hide even when you are only lightly obscured by foliage, heavy rain, falling snow, mist, and other natural phenomena. (Wood Elf only.)'},
+  {id:'drow-superior-darkvision',name:'Superior Darkvision',species:'Elf',description:'You can see in dim light within 120 feet as if it were bright light, and in darkness as if it were dim light. (Drow only.)'},
+  {id:'drow-sunlight-sensitivity',name:'Sunlight Sensitivity',species:'Elf',description:'You have disadvantage on attack rolls and on Perception checks that rely on sight when you, the target of your attack, or whatever you are trying to perceive is in direct sunlight. (Drow only.)'},
+  {id:'drow-drow-magic',name:'Drow Magic',species:'Elf',description:'You know the Dancing Lights cantrip. At 3rd level, you can cast Faerie Fire once per long rest. At 5th level, you can cast Darkness once per long rest. CHA is your spellcasting ability. (Drow only.)'},
+  // Gnome
+  {id:'gnome-darkvision',name:'Darkvision',species:'Gnome',description:'Accustomed to life underground, you can see in dim light within 60 feet as if it were bright light, and in darkness as if it were dim light. You can\'t discern color in darkness, only shades of gray.'},
+  {id:'gnome-gnomish-cunning',name:'Gnomish Cunning',species:'Gnome',description:'You have advantage on all INT, WIS, and CHA saving throws against magic.'},
+  {id:'gnome-natural-illusionist',name:'Natural Illusionist',species:'Gnome',description:'You know the Minor Illusion cantrip. INT is your spellcasting ability for it. (Forest Gnome only.)'},
+  {id:'gnome-speak-with-beasts',name:'Speak with Small Beasts',species:'Gnome',description:'Through sounds and gestures, you can communicate simple ideas with Small or smaller beasts. (Forest Gnome only.)'},
+  {id:'gnome-artificers-lore',name:"Artificer's Lore",species:'Gnome',description:'Whenever you make an INT (History) check related to magic items, alchemical objects, or technological devices, you can add twice your proficiency bonus instead of any proficiency bonus you normally apply. (Rock Gnome only.)'},
+  {id:'gnome-tinker',name:'Tinker',species:'Gnome',description:'You have proficiency with artisan\'s tools (tinker\'s tools). Using those tools, you can spend 1 hour and 10 GP worth of materials to construct a Tiny clockwork device (AC 5, 1 HP). The device ceases to function after 24 hours unless you spend 1 hour repairing it. (Rock Gnome only.)'},
+  // Goliath
+  {id:'goliath-giant-ancestry',name:'Giant Ancestry',species:'Goliath',description:'You are descended from giants. Choose one of six giant ancestries (Cloud, Fire, Frost, Hill, Stone, Storm) — each grants a different magical ability usable once per long rest, ranging from telekinesis to fiery strikes.'},
+  {id:'goliath-large-form',name:'Large Form',species:'Goliath',description:'Starting at level 5, you can change your size to Large as a bonus action, provided you have room. Your Large form lasts 10 minutes or until you end it. Once per long rest.'},
+  {id:'goliath-powerful-build',name:'Powerful Build',species:'Goliath',description:'You count as one size larger when determining your carrying capacity and the weight you can push, drag, or lift.'},
+  // Halfling
+  {id:'halfling-lucky',name:'Lucky',species:'Halfling',description:'When you roll a 1 on the d20 for an attack roll, ability check, or saving throw, you can reroll the die and must use the new roll.'},
+  {id:'halfling-brave',name:'Brave',species:'Halfling',description:'You have advantage on saving throws against being frightened.'},
+  {id:'halfling-nimbleness',name:'Halfling Nimbleness',species:'Halfling',description:'You can move through the space of any creature that is of a size larger than yours.'},
+  {id:'halfling-naturally-stealthy',name:'Naturally Stealthy',species:'Halfling',description:'You can attempt to hide even when you are obscured only by a creature that is at least one size larger than you. (Lightfoot Halfling only.)'},
+  {id:'halfling-stout-resilience',name:'Stout Resilience',species:'Halfling',description:'You have advantage on saving throws against poison and resistance to poison damage. (Stout Halfling only.)'},
+  // Human
+  {id:'human-resourceful',name:'Resourceful',species:'Human',description:'You gain Heroic Inspiration whenever you finish a long rest.'},
+  {id:'human-skillful',name:'Skillful',species:'Human',description:'You gain proficiency in one skill of your choice.'},
+  {id:'human-versatile',name:'Versatile',species:'Human',description:'You gain an Origin feat of your choice.'},
+  // Orc
+  {id:'orc-adrenaline-rush',name:'Adrenaline Rush',species:'Orc',description:'You can take the Dash action as a bonus action. When you do, you gain temporary HP equal to your proficiency bonus. Uses equal to proficiency bonus per long rest.'},
+  {id:'orc-darkvision',name:'Darkvision',species:'Orc',description:'You can see in dim light within 120 feet as if it were bright light, and in darkness as if it were dim light. You can\'t discern color in darkness, only shades of gray.'},
+  {id:'orc-relentless-endurance',name:'Relentless Endurance',species:'Orc',description:'When you are reduced to 0 HP but not killed outright, you can drop to 1 HP instead. Once per long rest.'},
+  // Tiefling
+  {id:'tiefling-darkvision',name:'Darkvision',species:'Tiefling',description:'You can see in dim light within 60 feet as if it were bright light, and in darkness as if it were dim light. You can\'t discern color in darkness, only shades of gray.'},
+  {id:'tiefling-hellish-resistance',name:'Hellish Resistance',species:'Tiefling',description:'You have resistance to fire damage.'},
+  {id:'tiefling-infernal-legacy',name:'Infernal Legacy',species:'Tiefling',description:'You know the Thaumaturgy cantrip. At 3rd level, you can cast Hellish Rebuke once per long rest (as a 2nd-level spell). At 5th level, you can cast Darkness once per long rest. CHA is your spellcasting ability.'}
+];
+
+// Re-render compendium-backed sections now that BACKGROUND_DATA, TRAIT_DATA,
+// and FEAT_DATA are defined. applySheet ran before this script block loaded,
+// so those renders produced empty/fallback output. This corrects them.
+renderBackground();
+renderTraits();
+renderFeats();
 </script>
 <!-- Enemy Stat Block Modal -->
 <div class="modal-overlay" id="enemy-sb-modal">
