@@ -2553,7 +2553,6 @@
 
 <!-- TOP BAR -->
 <div id="topbar">
-  <a href="index.html" style="padding:0 12px;height:44px;display:flex;align-items:center;font-family:'Cinzel',serif;font-size:11px;color:#a08060;text-decoration:none;border-right:1px solid #3d2e1a;letter-spacing:1px;" title="Back to party">← PARTY</a>
   <div id="topbar-char-name" style="padding:0 14px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:#c9a227;border-right:1px solid #3d2e1a;line-height:44px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;">PLAYER 3</div>
   <div class="mode-tabs">
     <button class="mode-tab active" onclick="switchMode('player',this)">Player Sheet</button>
@@ -2721,9 +2720,7 @@
         <!-- Languages -->
         <div class="section">
           <div class="section-title">Languages</div>
-          <div class="field-group">
-            <textarea id="core-languages" placeholder="Common, Elvish, Dwarvish…" style="min-height:60px;" oninput="sheet.profLanguages=this.value;const pl=document.getElementById('prof-languages');if(pl)pl.value=this.value;autoSave();"></textarea>
-          </div>
+          <div id="languages-list"></div>
         </div>
       </div>
 
@@ -2760,27 +2757,24 @@
         </div>
         <div class="section">
           <div class="section-title">Proficiencies</div>
-          <div class="field-row fr2">
-            <div class="field-group">
-              <label>Armor</label>
-              <textarea id="prof-armor" placeholder="Light armor, medium armor, shields…" style="min-height:60px;"></textarea>
-            </div>
-            <div class="field-group">
-              <label>Weapons</label>
-              <textarea id="prof-weapons" placeholder="Simple weapons, martial weapons…" style="min-height:60px;"></textarea>
-            </div>
+          <div style="margin-bottom:16px;">
+            <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-muted);margin-bottom:8px;">Armor</div>
+            <div id="armor-profs-chips" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
           </div>
-          <div class="field-row fr2">
-            <div class="field-group">
-              <label>Tools</label>
-              <textarea id="prof-tools" placeholder="Thieves' tools, musical instrument…" style="min-height:60px;"></textarea>
+          <div style="margin-bottom:16px;">
+            <div class="feats-section-header">
+              <span class="feats-section-label">Weapons</span>
+              <button class="browse-feats-btn" onclick="openWeaponProfCompendium()">Browse &amp; Add</button>
             </div>
-            <div class="field-group">
-              <label>Languages <span style="font-size:11px;color:var(--ink-muted);font-weight:400;letter-spacing:0;">· synced with Core tab</span></label>
-              <textarea id="prof-languages" placeholder="Common, Elvish, Dwarvish…" style="min-height:60px;" oninput="sheet.profLanguages=this.value;const cl=document.getElementById('core-languages');if(cl)cl.value=this.value;autoSave();"></textarea>
-            </div>
+            <div id="weapon-profs-list"></div>
           </div>
-        </div>
+          <div>
+            <div class="feats-section-header">
+              <span class="feats-section-label">Tools</span>
+              <button class="browse-feats-btn" onclick="openToolProfCompendium()">Browse &amp; Add</button>
+            </div>
+            <div id="tool-profs-list"></div>
+          </div>
         <div class="section">
           <div class="section-title">Personality</div>
           <div class="field-row fr2">
@@ -4265,7 +4259,7 @@ let sheet = {
   currency:{pp:0,gp:0,ep:0,sp:0,cp:0},
   // Features & proficiencies
   features:[],
-  profArmor:'', profWeapons:'', profTools:'', profLanguages:'',
+  languages:[], armorProfs:[], weaponProfs:[], toolProfs:[],
   // Personality
   personalityTraits:'', ideals:'', bonds:'', flaws:'',
   // Notes & appearance
@@ -4818,7 +4812,14 @@ function renderAttacks(){
         <input type="text" value="${esc(a.name)}" onchange="sheet.attacks[${i}].name=this.value;renderAttacks();autoSave();" placeholder="Weapon name" style="margin-top:3px;width:100%;font-size:13px;">
         ${finesseToggle}
       </td>
-      <td data-label="ATK BONUS"><input type="text" value="${esc(a.bonus)}" onchange="sheet.attacks[${i}].bonus=this.value;autoSave();" style="width:60px;text-align:center;">${attackFlag}</td>
+      <td data-label="ATK BONUS" style="text-align:center;">
+        <span class="auto-calc" style="font-size:15px;display:block;">${fmod(calcAttackBonus(a))}</span>
+        <div style="display:flex;align-items:center;justify-content:center;gap:4px;margin-top:3px;">
+          <input type="number" value="${a.magicBonus||0}" min="-5" max="5" onchange="sheet.attacks[${i}].magicBonus=parseInt(this.value)||0;renderAttacks();autoSave();" style="width:44px;font-size:10px;text-align:center;">
+          <span style="font-size:9px;color:var(--ink-light);">magic</span>
+        </div>
+        ${attackFlag}
+      </td>
       <td data-label="DAMAGE"><span class="auto-calc" style="font-size:13px;">${esc(dmgStr)}</span></td>
       <td data-label="TYPE"><input type="text" value="${esc(a.type)}" onchange="sheet.attacks[${i}].type=this.value;autoSave();" style="width:80px;"></td>
       <td data-label="MASTERY" style="text-align:center;">${badge}${customMasterySelect}</td>
@@ -5691,10 +5692,7 @@ function gatherSheet(){
   sheet.hitDieTotal = parseInt(document.getElementById('hit-die-total').value)||1;
   // armorKey and shieldEquipped are written directly by selectArmor()/toggleShield()
   sheet.currency    = getSheetCurrency();
-  sheet.profArmor   = document.getElementById('prof-armor').value;
-  sheet.profWeapons = document.getElementById('prof-weapons').value;
-  sheet.profTools   = document.getElementById('prof-tools').value;
-  sheet.profLanguages= document.getElementById('prof-languages').value;
+
   sheet.personalityTraits= document.getElementById('personality-traits').value;
   sheet.ideals      = document.getElementById('personality-ideals').value;
   sheet.bonds       = document.getElementById('personality-bonds').value;
@@ -5739,7 +5737,11 @@ function applySheet(data){
   Object.assign(sheet, defaults, data);
 
   // Migrate attacks to include mastery field (backward compat)
-  sheet.attacks = sheet.attacks.map(a => Object.assign({mastery:''}, a));
+  sheet.attacks = sheet.attacks.map(a => Object.assign({mastery:'', magicBonus:0}, a));
+  if(!Array.isArray(sheet.languages))   sheet.languages   = [];
+  if(!Array.isArray(sheet.armorProfs))  sheet.armorProfs  = [];
+  if(!Array.isArray(sheet.weaponProfs)) sheet.weaponProfs = [];
+  if(!Array.isArray(sheet.toolProfs))   sheet.toolProfs   = [];
   // Migrate inventory — strip legacy armor/shield equip fields
   sheet.inventory = sheet.inventory.map(it => ({
     name: it.name || '',
@@ -5795,11 +5797,7 @@ function applySheet(data){
     set('cur-sp', sheet.currency.sp);
     set('cur-cp', sheet.currency.cp);
   }
-  set('prof-armor',     sheet.profArmor);
-  set('prof-weapons',   sheet.profWeapons);
-  set('prof-tools',     sheet.profTools);
-  set('prof-languages', sheet.profLanguages);
-  set('core-languages', sheet.profLanguages);
+
   set('personality-traits', sheet.personalityTraits);
   set('personality-ideals', sheet.ideals);
   set('personality-bonds',  sheet.bonds);
@@ -5835,6 +5833,10 @@ function applySheet(data){
   renderBackground();
   renderTraits();
   renderFeats();
+  renderLanguages();
+  renderArmorProfs();
+  renderWeaponProfs();
+  renderToolProfs();
   updateCurrencyTotal();
   renderActionEconomy();
   updateSneakAttackWidget();
@@ -7445,6 +7447,13 @@ function getWeaponDamageString(attack){
   return `${die} + ${statLabel} (${fmod(statMod)})`;
 }
 
+function calcAttackBonus(a){
+  const isRanged = a.name && ['Longbow','Shortbow','Hand Crossbow','Heavy Crossbow','Light Crossbow','Dart','Sling','Blowgun','Pistol','Musket'].includes(a.name);
+  const isFin = FINESSE_WEAPON_NAMES.has(a.name);
+  const attr = isRanged ? 'DEX' : isFin ? (a.finesseAttr || 'STR') : 'STR';
+  return profBonus() + mod(sheet.stats[attr]) + (a.magicBonus || 0);
+}
+
 // ─── V15: FINESSE ATTACK TOGGLE ───────────────────────────────────────────────
 function setFinesseAttr(idx, attr){
   sheet.attacks[idx].finesseAttr = attr;
@@ -7769,6 +7778,180 @@ document.addEventListener('change', e=>{
   autoSave();
 });
 
+// ─── LANGUAGES ────────────────────────────────────────────────────────────────
+const LANGUAGES_LIST = [
+  {group:'Standard', items:['Common','Common Sign Language','Dwarvish','Elvish','Giant','Gnomish','Goblin','Halfling','Orcish']},
+  {group:'Rare',     items:['Abyssal','Celestial','Deep Speech','Draconic','Infernal','Primordial','Sylvan','Undercommon']}
+];
+
+function renderLanguages(){
+  const el = document.getElementById('languages-list');
+  if(!el) return;
+  let html = '';
+  LANGUAGES_LIST.forEach(g => {
+    html += `<div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-muted);margin:8px 0 4px;">${g.group}</div>`;
+    g.items.forEach(lang => {
+      const known = (sheet.languages||[]).includes(lang);
+      html += `<div class="check-row" style="cursor:pointer;" onclick="toggleLanguage('${lang}')">
+        <div class="prof-dot ${known?'proficient':''}"></div>
+        <span class="check-label">${lang}</span>
+      </div>`;
+    });
+  });
+  el.innerHTML = html;
+}
+
+function toggleLanguage(lang){
+  if(!sheet.languages) sheet.languages = [];
+  const idx = sheet.languages.indexOf(lang);
+  if(idx === -1) sheet.languages.push(lang);
+  else sheet.languages.splice(idx, 1);
+  renderLanguages();
+  autoSave();
+}
+
+// ─── PROFICIENCY PICKERS ──────────────────────────────────────────────────────
+const ARMOR_PROFS_LIST = ['Light Armor','Medium Armor','Heavy Armor','Shields'];
+
+const WEAPON_PROFS_LIST = [
+  {group:'Categories',     items:['Simple Weapons','Martial Weapons']},
+  {group:'Simple Melee',   items:['Club','Dagger','Greatclub','Handaxe','Javelin','Light Hammer','Mace','Quarterstaff','Sickle','Spear']},
+  {group:'Simple Ranged',  items:['Dart','Light Crossbow','Shortbow','Sling']},
+  {group:'Martial Melee',  items:['Battleaxe','Flail','Glaive','Greataxe','Greatsword','Halberd','Lance','Longsword','Maul','Morningstar','Pike','Rapier','Scimitar','Shortsword','Trident','War Pick','Warhammer','Whip']},
+  {group:'Martial Ranged', items:['Blowgun','Hand Crossbow','Heavy Crossbow','Longbow','Net']}
+];
+
+const TOOL_PROFS_LIST = [
+  {group:"Artisan's Tools",      items:["Alchemist's Supplies","Brewer's Supplies","Calligrapher's Supplies","Carpenter's Tools","Cartographer's Tools","Cobbler's Tools","Cook's Utensils","Glassblower's Tools","Jeweler's Tools","Leatherworker's Tools","Mason's Tools","Painter's Supplies","Potter's Tools","Smith's Tools","Tinker's Tools","Weaver's Tools","Woodcarver's Tools"]},
+  {group:'Gaming Sets',          items:["Dice Set","Dragonchess Set","Playing Card Set","Three-Dragon Ante Set"]},
+  {group:'Musical Instruments',  items:["Bagpipes","Drum","Dulcimer","Flute","Horn","Lute","Lyre","Pan Flute","Shawm","Viol"]},
+  {group:'Other Tools',          items:["Disguise Kit","Forgery Kit","Herbalism Kit","Navigator's Tools","Poisoner's Kit","Thieves' Tools","Vehicles (Land)","Vehicles (Water)"]}
+];
+
+function renderArmorProfs(){
+  const el = document.getElementById('armor-profs-chips');
+  if(!el) return;
+  el.innerHTML = ARMOR_PROFS_LIST.map(p => {
+    const active = (sheet.armorProfs||[]).includes(p);
+    return `<button class="feat-filter-chip${active?' active':''}" onclick="toggleArmorProf('${p}')">${p}</button>`;
+  }).join('');
+}
+
+function toggleArmorProf(prof){
+  if(!sheet.armorProfs) sheet.armorProfs = [];
+  const idx = sheet.armorProfs.indexOf(prof);
+  if(idx === -1) sheet.armorProfs.push(prof);
+  else sheet.armorProfs.splice(idx, 1);
+  renderArmorProfs();
+  autoSave();
+}
+
+function renderWeaponProfs(){
+  const el = document.getElementById('weapon-profs-list');
+  if(!el) return;
+  if(!(sheet.weaponProfs||[]).length){ el.innerHTML='<p class="feats-empty">No weapon proficiencies added yet.</p>'; return; }
+  el.innerHTML = sheet.weaponProfs.map((p,i) => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border-light);">
+      <span style="font-size:13px;color:var(--ink);">${esc(p)}</span>
+      <button class="feat-entry-remove" onclick="removeWeaponProf(${i})">&#x2715;</button>
+    </div>`).join('');
+}
+
+function removeWeaponProf(i){ sheet.weaponProfs.splice(i,1); renderWeaponProfs(); autoSave(); }
+
+let _weaponProfFilter = 'all';
+function openWeaponProfCompendium(){
+  _weaponProfFilter = 'all';
+  document.querySelectorAll('#weapon-prof-filter-row .feat-filter-chip').forEach(c => c.classList.toggle('active', c.dataset.filter === 'all'));
+  openModal('weapon-prof-modal');
+  renderWeaponProfList();
+}
+function setWeaponProfFilter(f){
+  _weaponProfFilter = f;
+  document.querySelectorAll('#weapon-prof-filter-row .feat-filter-chip').forEach(c => c.classList.toggle('active', c.dataset.filter === f));
+  renderWeaponProfList();
+}
+function renderWeaponProfList(){
+  const listEl = document.getElementById('weapon-prof-comp-list');
+  if(!listEl) return;
+  const added = new Set(sheet.weaponProfs||[]);
+  const groups = _weaponProfFilter === 'all' ? WEAPON_PROFS_LIST : WEAPON_PROFS_LIST.filter(g => g.group === _weaponProfFilter);
+  let html = '';
+  groups.forEach(g => {
+    if(_weaponProfFilter === 'all') html += `<div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-muted);padding:10px 0 4px;">${g.group}</div>`;
+    g.items.forEach(item => {
+      const isAdded = added.has(item);
+      html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border-light);">
+        <span style="font-size:13px;color:var(--ink);">${esc(item)}</span>
+        <button class="feat-add-btn${isAdded?' added':''}"${isAdded?' disabled':''} data-item="${esc(item)}" onclick="addWeaponProfFromEl(this)">${isAdded?'Added':'+ Add'}</button>
+      </div>`;
+    });
+  });
+  listEl.innerHTML = html;
+}
+function addWeaponProfFromEl(el){ addWeaponProf(el.dataset.item); }
+function addWeaponProf(prof){
+  if(!sheet.weaponProfs) sheet.weaponProfs = [];
+  if(sheet.weaponProfs.includes(prof)) return;
+  sheet.weaponProfs.push(prof);
+  renderWeaponProfList();
+  renderWeaponProfs();
+  autoSave();
+}
+
+function renderToolProfs(){
+  const el = document.getElementById('tool-profs-list');
+  if(!el) return;
+  if(!(sheet.toolProfs||[]).length){ el.innerHTML='<p class="feats-empty">No tool proficiencies added yet.</p>'; return; }
+  el.innerHTML = sheet.toolProfs.map((p,i) => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border-light);">
+      <span style="font-size:13px;color:var(--ink);">${esc(p)}</span>
+      <button class="feat-entry-remove" onclick="removeToolProf(${i})">&#x2715;</button>
+    </div>`).join('');
+}
+
+function removeToolProf(i){ sheet.toolProfs.splice(i,1); renderToolProfs(); autoSave(); }
+
+let _toolProfFilter = 'all';
+function openToolProfCompendium(){
+  _toolProfFilter = 'all';
+  document.querySelectorAll('#tool-prof-filter-row .feat-filter-chip').forEach(c => c.classList.toggle('active', c.dataset.filter === 'all'));
+  openModal('tool-prof-modal');
+  renderToolProfList();
+}
+function setToolProfFilter(f){
+  _toolProfFilter = f;
+  document.querySelectorAll('#tool-prof-filter-row .feat-filter-chip').forEach(c => c.classList.toggle('active', c.dataset.filter === f));
+  renderToolProfList();
+}
+function renderToolProfList(){
+  const listEl = document.getElementById('tool-prof-comp-list');
+  if(!listEl) return;
+  const added = new Set(sheet.toolProfs||[]);
+  const groups = _toolProfFilter === 'all' ? TOOL_PROFS_LIST : TOOL_PROFS_LIST.filter(g => g.group === _toolProfFilter);
+  let html = '';
+  groups.forEach(g => {
+    if(_toolProfFilter === 'all') html += `<div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-muted);padding:10px 0 4px;">${g.group}</div>`;
+    g.items.forEach(item => {
+      const isAdded = added.has(item);
+      html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border-light);">
+        <span style="font-size:13px;color:var(--ink);">${esc(item)}</span>
+        <button class="feat-add-btn${isAdded?' added':''}"${isAdded?' disabled':''} data-item="${esc(item)}" onclick="addToolProfFromEl(this)">${isAdded?'Added':'+ Add'}</button>
+      </div>`;
+    });
+  });
+  listEl.innerHTML = html;
+}
+function addToolProfFromEl(el){ addToolProf(el.dataset.item); }
+function addToolProf(prof){
+  if(!sheet.toolProfs) sheet.toolProfs = [];
+  if(sheet.toolProfs.includes(prof)) return;
+  sheet.toolProfs.push(prof);
+  renderToolProfList();
+  renderToolProfs();
+  autoSave();
+}
+
 init();
 
 // First-open backup reminder — fires once only on a brand new sheet
@@ -7910,6 +8093,49 @@ if(window._firstOpen){
       <button class="feat-filter-chip" data-filter="species" onclick="setFeatFilter('species')">Species</button>
     </div>
     <div class="feat-comp-list" id="feat-comp-list"></div>
+  </div>
+</div>
+
+<!-- Weapon Proficiency Compendium Modal -->
+<div class="modal-overlay" id="weapon-prof-modal" onclick="if(event.target===this)closeModal('weapon-prof-modal')">
+  <div class="modal feat-comp-modal">
+    <div class="feat-comp-header">
+      <div>
+        <p class="feat-comp-brand">· TAVERN ·</p>
+        <h2 class="feat-comp-title">Weapon Proficiencies</h2>
+      </div>
+      <button class="modal-close" onclick="closeModal('weapon-prof-modal')">&#x2715;</button>
+    </div>
+    <div class="feat-filter-row" id="weapon-prof-filter-row">
+      <button class="feat-filter-chip active" data-filter="all" onclick="setWeaponProfFilter(this.dataset.filter)">All</button>
+      <button class="feat-filter-chip" data-filter="Categories" onclick="setWeaponProfFilter(this.dataset.filter)">Categories</button>
+      <button class="feat-filter-chip" data-filter="Simple Melee" onclick="setWeaponProfFilter(this.dataset.filter)">Simple Melee</button>
+      <button class="feat-filter-chip" data-filter="Simple Ranged" onclick="setWeaponProfFilter(this.dataset.filter)">Simple Ranged</button>
+      <button class="feat-filter-chip" data-filter="Martial Melee" onclick="setWeaponProfFilter(this.dataset.filter)">Martial Melee</button>
+      <button class="feat-filter-chip" data-filter="Martial Ranged" onclick="setWeaponProfFilter(this.dataset.filter)">Martial Ranged</button>
+    </div>
+    <div class="feat-comp-list" id="weapon-prof-comp-list"></div>
+  </div>
+</div>
+
+<!-- Tool Proficiency Compendium Modal -->
+<div class="modal-overlay" id="tool-prof-modal" onclick="if(event.target===this)closeModal('tool-prof-modal')">
+  <div class="modal feat-comp-modal">
+    <div class="feat-comp-header">
+      <div>
+        <p class="feat-comp-brand">· TAVERN ·</p>
+        <h2 class="feat-comp-title">Tool Proficiencies</h2>
+      </div>
+      <button class="modal-close" onclick="closeModal('tool-prof-modal')">&#x2715;</button>
+    </div>
+    <div class="feat-filter-row" id="tool-prof-filter-row">
+      <button class="feat-filter-chip active" data-filter="all" onclick="setToolProfFilter(this.dataset.filter)">All</button>
+      <button class="feat-filter-chip" data-filter="Artisan's Tools" onclick="setToolProfFilter(this.dataset.filter)">Artisan's Tools</button>
+      <button class="feat-filter-chip" data-filter="Gaming Sets" onclick="setToolProfFilter(this.dataset.filter)">Gaming Sets</button>
+      <button class="feat-filter-chip" data-filter="Musical Instruments" onclick="setToolProfFilter(this.dataset.filter)">Instruments</button>
+      <button class="feat-filter-chip" data-filter="Other Tools" onclick="setToolProfFilter(this.dataset.filter)">Other</button>
+    </div>
+    <div class="feat-comp-list" id="tool-prof-comp-list"></div>
   </div>
 </div>
 
